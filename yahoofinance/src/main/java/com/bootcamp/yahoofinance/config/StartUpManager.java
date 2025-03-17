@@ -68,7 +68,7 @@ public class StartUpManager implements CommandLineRunner {
 
       String redisString = "5min" + stockCode;
 
-      this.redisManager.set(redisString, stockDTO, Duration.ofMinutes(1));
+      this.redisManager.set(redisString, stockDTO, Duration.ofHours(12));
     }
 
   }
