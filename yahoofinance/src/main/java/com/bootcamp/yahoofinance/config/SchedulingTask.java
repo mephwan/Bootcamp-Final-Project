@@ -1,6 +1,8 @@
 package com.bootcamp.yahoofinance.config;
 
+import java.time.Duration;
 import java.time.Instant;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.time.ZoneId;
@@ -13,7 +15,11 @@ import org.springframework.stereotype.Component;
 import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.client.ResourceAccessException;
 import org.springframework.web.client.RestTemplate;
+import com.bootcamp.yahoofinance.DTO.StockDTO;
+import com.bootcamp.yahoofinance.DTO.StockDTO.StockData;
 import com.bootcamp.yahoofinance.entity.StockPriceEntity;
+import com.bootcamp.yahoofinance.exception.BusinessException;
+import com.bootcamp.yahoofinance.lib.RedisManager;
 import com.bootcamp.yahoofinance.lib.YahooManager;
 import com.bootcamp.yahoofinance.model.YahooDto;
 import com.bootcamp.yahoofinance.repository.StockListRepository;
@@ -33,8 +39,11 @@ public class SchedulingTask {
   @Autowired
   private RestTemplate restTemplate;
 
+  @Autowired
+  private RedisManager redisManager;
+
   @Scheduled(cron = "10 */5 09-17 * * MON-FRI")
-  public void getYahoo() {
+  public void getYahoo() throws Exception {
     LocalTime now = LocalTime.now();
 
     if (now.isBefore(LocalTime.of(9, 30))
@@ -42,14 +51,14 @@ public class SchedulingTask {
       return;
     }
 
-    List<String> stockList = stockListRepository.findAll().stream()
+    List<String> stockCodeList = stockListRepository.findAll().stream()
         .map(e -> e.getSymbol()).collect(Collectors.toList());
 
     YahooDto yahooDto = null;
 
     while (yahooDto == null) {
       try {
-        yahooDto = yahooManager.getYahooDtos(this.restTemplate, stockList);
+        yahooDto = yahooManager.getYahooDtos(this.restTemplate, stockCodeList);
       } catch (HttpClientErrorException e) {
         try {
           TimeUnit.SECONDS.sleep(5);
@@ -83,5 +92,32 @@ public class SchedulingTask {
         .forEach(e -> e.setApiDatetime(System.currentTimeMillis() / 1000));
 
     stockPriceRepository.saveAll(stockPriceEntities);
+
+    for (String stockCode : stockCodeList) {
+      LocalDate lastTradeDate = this.stockPriceRepository
+          .findFirstBySymbolOrderByMarketDateTimeDesc(stockCode)
+          .orElseThrow(() -> new BusinessException()).getMarketDateTime()
+          .toLocalDate();
+
+      StockDTO stockDTO =
+          StockDTO.builder().symbol(stockCode).timeFrame("M5")
+              .data(this.stockPriceRepository.findBySymbol(stockCode).stream()
+                  .filter(e -> e.getMarketDateTime().toLocalDate()
+                      .equals(lastTradeDate))
+                  .map(e -> StockData.builder()
+                  .symbol(e.getSymbol())
+                      .regularMarketTime(e.getRegularMarketTime())
+                      .marketDateTime(e.getMarketDateTime())
+                      .regularMarketPrice(e.getRegularMarketPrice())
+                      .regularMarketChangePercent(
+                          e.getRegularMarketChangePercent())
+                      .build())
+                  .collect(Collectors.toList()))
+              .build();
+
+      String redisString = "5min" + stockCode;
+
+      this.redisManager.set(redisString, stockDTO, Duration.ofMinutes(5));
+    }
   }
 }

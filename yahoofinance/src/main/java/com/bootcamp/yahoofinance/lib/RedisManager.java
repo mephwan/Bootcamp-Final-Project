@@ -1,14 +1,18 @@
 package com.bootcamp.yahoofinance.lib;
 
 import java.time.Duration;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.redis.connection.RedisConnectionFactory;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.data.redis.serializer.RedisSerializer;
+import org.springframework.stereotype.Component;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
+@Component
 public class RedisManager {
   private RedisTemplate<String, String> redisTemplate;
+  @Autowired
   private ObjectMapper objectMapper;
 
     public RedisManager(RedisConnectionFactory factory,
