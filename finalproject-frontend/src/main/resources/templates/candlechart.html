@@ -1,0 +1,23 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>TradingView Candlestick Chart</title>
+  <script src="https://unpkg.com/lightweight-charts@4.2.3/dist/lightweight-charts.standalone.production.js"></script>
+  <link rel="stylesheet" th:href="@{/css/styles.css}">
+</head>
+
+<body>
+  <h1>Stock Candlestick Chart</h1>
+  <div class="interval-buttons">
+    <button class="interval-btn" data-interval="m5">M5</button>
+    <button class="interval-btn" data-interval="1d">1D</button>
+  </div>
+  <div id="chart-container"></div>
+
+  <script th:src="@{/js/candlechart.js}"></script>
+</body>
+
+</html>
