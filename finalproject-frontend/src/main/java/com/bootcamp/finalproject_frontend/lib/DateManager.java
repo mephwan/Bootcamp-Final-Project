@@ -13,7 +13,7 @@ public class DateManager {
 
   private DateManager(Zone zone) {
     this.zoneId = switch (zone) {
-      case HK -> zoneId.of("Asia/Hong_Kong");
+      case HK -> ZoneId.of("UTC");
     };
   }
 

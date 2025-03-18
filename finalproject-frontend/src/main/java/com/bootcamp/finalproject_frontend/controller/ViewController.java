@@ -7,9 +7,9 @@ import org.springframework.web.bind.annotation.GetMapping;
 @Controller
 public class ViewController {
   
-  @GetMapping(value = "/candlechart")
-  public String candlechart(Model model) {
+  @GetMapping(value = "/chart")
+  public String showchart(Model model) {
 
-    return "candlechart";
+    return "chart";
   }
 }
