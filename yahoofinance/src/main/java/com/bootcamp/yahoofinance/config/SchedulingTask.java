@@ -42,14 +42,8 @@ public class SchedulingTask {
   @Autowired
   private RedisManager redisManager;
 
-  @Scheduled(cron = "10 */5 09-17 * * MON-FRI")
+  @Scheduled(cron = "10 */5 * * * MON-FRI")
   public void getYahoo() throws Exception {
-    LocalTime now = LocalTime.now();
-
-    if (now.isBefore(LocalTime.of(9, 30))
-        || now.isAfter(LocalTime.of(16, 30))) {
-      return;
-    }
 
     List<String> stockCodeList = stockListRepository.findAll().stream()
         .map(e -> e.getSymbol()).collect(Collectors.toList());
@@ -79,8 +73,6 @@ public class SchedulingTask {
             .regularMarketTime(e.getRegularMarketTime()) //
             .regularMarketPrice(e.getRegularMarketPrice()) //
             .regularMarketChangePercent(e.getRegularMarketChangePercent()) //
-            .bid(e.getBid()) //
-            .ask(e.getAsk()) //
             .type("M5") //
             .marketDateTime(LocalDateTime.ofInstant(
                 Instant.ofEpochSecond(e.getRegularMarketTime()),

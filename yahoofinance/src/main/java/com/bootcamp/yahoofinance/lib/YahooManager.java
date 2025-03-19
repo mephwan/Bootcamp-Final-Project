@@ -9,6 +9,7 @@ import org.springframework.stereotype.Component;
 import org.springframework.web.client.RestTemplate;
 import org.springframework.web.util.UriComponentsBuilder;
 import com.bootcamp.yahoofinance.model.YahooDto;
+import com.bootcamp.yahoofinance.model.YahooOHLCDto;
 import com.bootcamp.yahoofinance.util.Yahoo;
 
 @Component
@@ -42,6 +43,26 @@ public class YahooManager {
 
     ResponseEntity<YahooDto> responseDto = restTemplate.exchange(tryurl,
         HttpMethod.GET, new HttpEntity<>(headers), YahooDto.class);
+
+    return responseDto.getBody();
+  }
+
+  public YahooOHLCDto getOhlcDto(RestTemplate restTemplate) {
+    CookieManager cookieManager = new CookieManager(restTemplate);
+    String cookieHeader = cookieManager.getCookie();
+    restTemplate = cookieManager.getRestTemplate();
+    HttpHeaders headers = cookieManager.getHeaders();
+
+    CrumbManager crumbManager = new CrumbManager(restTemplate, headers);
+    String crumb = crumbManager.getCrumb(headers, cookieHeader);
+    restTemplate = crumbManager.getRestTemplate();
+    headers = crumbManager.getHeaders();
+
+    String url =
+        "https://query1.finance.yahoo.com/v8/finance/chart/0388.HK?period1=1388563200&period2=1509694074&interval=1d&events=history&crumb=" + crumb;
+
+    ResponseEntity<YahooOHLCDto> responseDto = restTemplate.exchange(url,
+        HttpMethod.GET, new HttpEntity<>(headers), YahooOHLCDto.class);
 
     return responseDto.getBody();
   }

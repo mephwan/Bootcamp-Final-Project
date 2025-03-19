@@ -35,8 +35,6 @@ public class StockPriceEntity {
 
   @Column(name = "regular_market_change_percent")
   private Double regularMarketChangePercent;
-  private Double bid;
-  private Double ask;
 
   private String type;
   private Long apiDatetime;

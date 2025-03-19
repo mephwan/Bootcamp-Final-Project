@@ -4,10 +4,13 @@ import java.time.LocalDate;
 import java.util.stream.Collectors;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.web.client.RestTemplate;
 import com.bootcamp.yahoofinance.DTO.StockDTO;
 import com.bootcamp.yahoofinance.DTO.StockDTO.StockData;
 import com.bootcamp.yahoofinance.exception.BusinessException;
 import com.bootcamp.yahoofinance.lib.RedisManager;
+import com.bootcamp.yahoofinance.lib.YahooManager;
+import com.bootcamp.yahoofinance.model.YahooOHLCDto;
 import com.bootcamp.yahoofinance.repository.StockPriceRepository;
 import com.bootcamp.yahoofinance.service.YahooService;
 import com.fasterxml.jackson.core.JsonProcessingException;
@@ -19,6 +22,12 @@ public class YahooServiceImpl implements YahooService {
 
     @Autowired
     private RedisManager redisManager;
+
+    @Autowired
+    private YahooManager YahooManager;
+
+    @Autowired
+    private RestTemplate restTemplate;
 
     @Override
     public StockDTO getPrice(String stockCode) throws JsonProcessingException {
@@ -51,5 +60,11 @@ public class YahooServiceImpl implements YahooService {
         .marketDateTime(e.getMarketDateTime()).regularMarketPrice(e.getRegularMarketPrice())
         .regularMarketChangePercent(e.getRegularMarketChangePercent()).build()).collect(Collectors.toList())).build();
         
+    }
+
+    @Override
+    public YahooOHLCDto getOhlcDto() {
+
+        return this.YahooManager.getOhlcDto(this.restTemplate);
     }
 }

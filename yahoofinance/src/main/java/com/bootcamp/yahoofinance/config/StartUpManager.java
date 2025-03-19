@@ -46,23 +46,57 @@ public class StartUpManager implements CommandLineRunner {
   private RestTemplate restTemplate;
 
   @Override
-  public void run(String... args) throws JsonProcessingException {
+  public void run(String... args) {
 
-    List<StockListEntity> stockList = new ArrayList<>();
-    List<String> stockCodeList = new ArrayList<>();
+    addStockListEntity();
 
-    stockCodeList.add("0388.HK");
-    stockCodeList.add("0700.HK");
-    stockCodeList.add("0005.HK");
+    getStockPriceFromYahoo();
 
-    for (String stockCode : stockCodeList) {
-      stockList.add(new StockListEntity(stockCode));
+    try {
+      setToRedis();
+    } catch (JsonProcessingException e) {
+
     }
+
+  }
+
+
+  private void addStockListEntity() {
+    List<StockListEntity> stockList = new ArrayList<>();
+
+    stockList.add(new StockListEntity("0700.HK", "HK"));
+    stockList.add(new StockListEntity("9988.HK", "HK"));
+    stockList.add(new StockListEntity("0941.HK", "HK"));
+    stockList.add(new StockListEntity("0939.HK", "HK"));
+    stockList.add(new StockListEntity("0005.HK", "HK"));
+    stockList.add(new StockListEntity("1810.HK", "HK"));
+    stockList.add(new StockListEntity("3690.HK", "HK"));
+    stockList.add(new StockListEntity("0883.HK", "HK"));
+    stockList.add(new StockListEntity("1299.HK", "HK"));
+    stockList.add(new StockListEntity("9618.HK", "HK"));
+
+    stockList.add(new StockListEntity("AAPL", "US"));
+    stockList.add(new StockListEntity("MSFT", "US"));
+    stockList.add(new StockListEntity("NVDA", "US"));
+    stockList.add(new StockListEntity("AMZN", "US"));
+    stockList.add(new StockListEntity("WMT", "US"));
+    stockList.add(new StockListEntity("JPM", "US"));
+    stockList.add(new StockListEntity("V", "US"));
+    stockList.add(new StockListEntity("UNH", "US"));
+    stockList.add(new StockListEntity("JNJ", "US"));
+    stockList.add(new StockListEntity("PG", "US"));
+
+    stockList.add(new StockListEntity("BTC-USD", "Crypto"));
+    stockList.add(new StockListEntity("ETH-USD", "Crypto"));
 
     this.stockListRepository.deleteAll();
     this.stockListRepository.saveAll(stockList);
+  }
 
+  private void getStockPriceFromYahoo() {
     LocalDate lastTradeDate = null;
+    List<String> stockCodeList = this.stockListRepository.findAll().stream()
+        .map(e -> e.getSymbol()).collect(Collectors.toList());
 
     for (String stockCode : stockCodeList) {
       Optional<StockPriceEntity> stockOptional = this.stockPriceRepository
@@ -106,8 +140,6 @@ public class StartUpManager implements CommandLineRunner {
                 .regularMarketTime(e.getRegularMarketTime()) //
                 .regularMarketPrice(e.getRegularMarketPrice()) //
                 .regularMarketChangePercent(e.getRegularMarketChangePercent()) //
-                .bid(e.getBid()) //
-                .ask(e.getAsk()) //
                 .type("M5") //
                 .marketDateTime(LocalDateTime.ofInstant(
                     Instant.ofEpochSecond(e.getRegularMarketTime()),
@@ -120,7 +152,15 @@ public class StartUpManager implements CommandLineRunner {
 
         stockPriceRepository.saveAll(stockPriceEntities);
       }
+    }
+  }
 
+  private void setToRedis() throws JsonProcessingException {
+    LocalDate lastTradeDate = null;
+    List<String> stockCodeList = this.stockListRepository.findAll().stream()
+        .map(e -> e.getSymbol()).collect(Collectors.toList());
+
+    for (String stockCode : stockCodeList) {
       LocalDate finalLastTradeDate = lastTradeDate;
 
       StockDTO stockDTO =
@@ -142,6 +182,5 @@ public class StartUpManager implements CommandLineRunner {
 
       this.redisManager.set(redisString, stockDTO, Duration.ofHours(12));
     }
-
   }
 }

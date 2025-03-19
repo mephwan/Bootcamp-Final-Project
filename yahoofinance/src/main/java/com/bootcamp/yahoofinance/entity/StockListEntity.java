@@ -19,8 +19,10 @@ public class StockListEntity {
   private Long id;
 
   private String symbol;
+  private String market;
 
-  public StockListEntity(String symbol) {
+  public StockListEntity(String symbol, String market) {
     this.symbol = symbol;
+    this.market = market;
   }
 }
