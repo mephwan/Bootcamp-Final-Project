@@ -6,6 +6,7 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.util.ArrayList;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Optional;
 import java.util.concurrent.TimeUnit;
@@ -20,11 +21,13 @@ import com.bootcamp.yahoofinance.DTO.StockDTO;
 import com.bootcamp.yahoofinance.DTO.StockDTO.StockData;
 import com.bootcamp.yahoofinance.entity.StockListEntity;
 import com.bootcamp.yahoofinance.entity.StockPriceEntity;
-import com.bootcamp.yahoofinance.exception.BusinessException;
+import com.bootcamp.yahoofinance.entity.StockPriceOHLCEntity;
 import com.bootcamp.yahoofinance.lib.RedisManager;
 import com.bootcamp.yahoofinance.lib.YahooManager;
 import com.bootcamp.yahoofinance.model.YahooDto;
+import com.bootcamp.yahoofinance.model.YahooOHLCDto;
 import com.bootcamp.yahoofinance.repository.StockListRepository;
+import com.bootcamp.yahoofinance.repository.StockPriceOHLCRepository;
 import com.bootcamp.yahoofinance.repository.StockPriceRepository;
 import com.fasterxml.jackson.core.JsonProcessingException;
 
@@ -37,6 +40,9 @@ public class StartUpManager implements CommandLineRunner {
   private StockPriceRepository stockPriceRepository;
 
   @Autowired
+  private StockPriceOHLCRepository stockPriceOHLCRepository;
+
+  @Autowired
   private RedisManager redisManager;
 
   @Autowired
@@ -46,17 +52,15 @@ public class StartUpManager implements CommandLineRunner {
   private RestTemplate restTemplate;
 
   @Override
-  public void run(String... args) {
+  public void run(String... args) throws JsonProcessingException {
 
     addStockListEntity();
 
     getStockPriceFromYahoo();
 
-    try {
-      setToRedis();
-    } catch (JsonProcessingException e) {
+    getOHLC();
 
-    }
+    setToRedis();
 
   }
 
@@ -94,7 +98,6 @@ public class StartUpManager implements CommandLineRunner {
   }
 
   private void getStockPriceFromYahoo() {
-    LocalDate lastTradeDate = null;
     List<String> stockCodeList = this.stockListRepository.findAll().stream()
         .map(e -> e.getSymbol()).collect(Collectors.toList());
 
@@ -102,9 +105,8 @@ public class StartUpManager implements CommandLineRunner {
       Optional<StockPriceEntity> stockOptional = this.stockPriceRepository
           .findFirstBySymbolOrderByMarketDateTimeDesc(stockCode);
 
-      if (stockOptional.isPresent()) {
-        lastTradeDate = stockOptional.get().getMarketDateTime().toLocalDate();
-      } else {
+      if (!stockOptional.isPresent()) {
+
 
         YahooDto yahooDto = null;
 
@@ -122,13 +124,6 @@ public class StartUpManager implements CommandLineRunner {
             System.out.println("Retry....");
           }
         }
-
-        lastTradeDate = yahooDto.getQuoteResponse().getResult().stream()
-            .filter(e -> e.getSymbol().equals(stockCode)).findAny()
-            .map(e -> LocalDateTime.ofInstant(
-                Instant.ofEpochSecond(e.getRegularMarketTime()),
-                ZoneId.systemDefault()))
-            .orElseThrow(() -> new BusinessException()).toLocalDate();
 
         List<StockPriceEntity> stockPriceEntities = yahooDto.getQuoteResponse()
             .getResult().stream() //
@@ -182,5 +177,36 @@ public class StartUpManager implements CommandLineRunner {
 
       this.redisManager.set(redisString, stockDTO, Duration.ofHours(12));
     }
+  }
+
+  private void getOHLC() {
+    YahooOHLCDto yahooOHLCDto = this.yahooManager.getOhlcDto(this.restTemplate);
+    List<Long> timestemp =
+        yahooOHLCDto.getChart().getResult().get(0).getTimestamp();
+    List<Double> high = yahooOHLCDto.getChart().getResult().get(0)
+        .getIndicators().getQuote().get(0).getHigh();
+    List<Double> open = yahooOHLCDto.getChart().getResult().get(0)
+        .getIndicators().getQuote().get(0).getOpen();
+    List<Double> low = yahooOHLCDto.getChart().getResult().get(0)
+        .getIndicators().getQuote().get(0).getLow();
+    List<Double> close = yahooOHLCDto.getChart().getResult().get(0)
+        .getIndicators().getQuote().get(0).getClose();
+
+    List<StockPriceOHLCEntity> stockPriceOHLCEntities = new LinkedList<>();
+
+    for (int i = 0; i < timestemp.size(); i++) {
+      stockPriceOHLCEntities.add(StockPriceOHLCEntity.builder()
+          .symbol("0388.HK") //
+          .open(open.get(i)) //
+          .high(high.get(i)) //
+          .low(low.get(i)) //
+          .close(close.get(i)) //
+          .timestamp(timestemp.get(i)) //
+          .date(LocalDateTime.ofInstant(Instant.ofEpochSecond(timestemp.get(i)), ZoneId.systemDefault()).toLocalDate())
+          .build());
+    }
+
+    this.stockPriceOHLCRepository.saveAll(stockPriceOHLCEntities);
+
   }
 }
