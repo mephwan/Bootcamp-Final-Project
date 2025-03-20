@@ -10,3 +10,49 @@ body {
   background-color: black;
   position: relative;
 }
+.container {
+  display: flex;
+  gap: 20px;
+}
+
+.symbol-list {
+  width: 150px;
+  background: #1e1e1e;
+  padding: 15px;
+  border-radius: 8px;
+  border: 1px solid #333333;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.3);
+}
+
+.symbol-option {
+  display: block;
+  margin: 10px 0;
+  padding: 8px;
+  border-radius: 4px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  color: #ffffff;
+}
+
+.symbol-option:hover {
+  background: #333333;
+}
+
+.symbol-option input[type="radio"] {
+  accent-color: #4CAF50; /* 修改radio button顏色 */
+  margin-right: 8px;
+}
+
+.chart-controls button {
+  background: #2d2d2d;
+  color: #fff;
+  border: 1px solid #444;
+  padding: 8px 12px;
+  border-radius: 4px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.chart-controls button:hover {
+  background: #3d3d3d;
+}

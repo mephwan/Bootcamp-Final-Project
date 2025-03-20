@@ -7,5 +7,5 @@ import com.bootcamp.finalproject_frontend.dto.LinePointDTO;
 
 public interface LineChartOperation {
   @GetMapping(value = "/chart/line")
-  List<LinePointDTO> getLineChart(@RequestParam String interval);
+  List<LinePointDTO> getLineChart(@RequestParam String interval, @RequestParam String symbol);
 }

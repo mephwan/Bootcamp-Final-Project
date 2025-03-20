@@ -10,15 +10,34 @@
 </head>
 
 <body>
-  <h1>Stock Chart</h1>
-  <div class="chart-controls">
-    <button id="M5">M5</button>
-    <button id="D1">D1</button>
-    <button id="W1">W1</button>
-    <button id="MN">MN</button>
-
-  </div>
-  <div id="chart-container"></div>
+  <div class="container">
+    <!-- 右側固定列表 -->
+    <div class="symbol-list">
+      <h1>HK Stock</h1>
+      <label class="symbol-option">
+        <input type="radio" name="symbol" value="9988.HK" checked> 9988.HK
+      </label>
+      <label class="symbol-option">
+        <input type="radio" name="symbol" value="0941.HK"> 0941.HK
+      </label>
+      <label class="symbol-option">
+        <input type="radio" name="symbol" value="0939.HK"> 0939.HK
+      </label>
+      <label class="symbol-option">
+        <input type="radio" name="symbol" value="0005.HK"> 0005.HK
+      </label>
+    </div>
+  
+    <div class="chart-wrapper">
+      <h1>Stock Chart</h1>
+      <div class="chart-controls">
+        <button id="M5">M5</button>
+        <button id="D1">D1</button>
+        <button id="W1">W1</button>
+        <button id="MN">MN</button>
+      </div>
+      <div id="chart-container"></div>
+    </div>
   <script th:src="@{/js/chart.js}"></script>
 </body>
 

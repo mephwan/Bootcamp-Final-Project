@@ -2,6 +2,7 @@
 document.addEventListener("DOMContentLoaded", function () {
   let chart = null;
   let currentSeries = null;
+  let currentChartType = null;
 
   // 通用图表配置
   const baseChartConfig = {
@@ -35,6 +36,13 @@ document.addEventListener("DOMContentLoaded", function () {
       return `${date.getHours().toString().padStart(2, '0')}:${date.getMinutes().toString().padStart(2, '0')}`;
     };
   }
+
+  function getSelectedSymbol() {
+    const selected = document.querySelector('input[name="symbol"]:checked');
+    console.log('当前选中的symbol:', selected ? selected.value : '未找到元素'); // 添加调试日志
+    return selected.value;
+  }
+  
 
   // 销毁现有图表
   function destroyChart() {
@@ -71,7 +79,10 @@ document.addEventListener("DOMContentLoaded", function () {
     });
 
     try {
-      const params = new URLSearchParams({ interval: "1d" });
+      const params = new URLSearchParams({ 
+        interval: "1d",
+        symbol: getSelectedSymbol() // 确保这个方法能获取到选中的值
+    });
       const response = await fetch(`/v1/chart/candle?${params}`);
       const data = await response.json();
       
@@ -122,7 +133,7 @@ document.addEventListener("DOMContentLoaded", function () {
     });
 
     try {
-      const params = new URLSearchParams({ interval: "1w" });
+      const params = new URLSearchParams({ interval: "1w" , symbol: getSelectedSymbol()});
       const response = await fetch(`/v1/chart/candle?${params}`);
       const data = await response.json();
       
@@ -173,7 +184,7 @@ document.addEventListener("DOMContentLoaded", function () {
     });
 
     try {
-      const params = new URLSearchParams({ interval: "mn" });
+      const params = new URLSearchParams({ interval: "mn" , symbol: getSelectedSymbol()});
       const response = await fetch(`/v1/chart/candle?${params}`);
       const data = await response.json();
       
@@ -221,7 +232,10 @@ document.addEventListener("DOMContentLoaded", function () {
     });
 
     try {
-      const params = new URLSearchParams({ interval: "5m" });
+      const params = new URLSearchParams({ 
+        interval: "5m",
+        symbol: getSelectedSymbol() // 确保这个方法能获取到选中的值
+    });
       const response = await fetch(`/v1/chart/line?${params}`);
       const data = await response.json();
       
@@ -242,6 +256,8 @@ document.addEventListener("DOMContentLoaded", function () {
       console.error("Error loading line chart:", error);
     }
   }
+
+
 
   function autoRefreshChart() {
     if (currentChartType === 'd1') {
@@ -264,7 +280,11 @@ document.addEventListener("DOMContentLoaded", function () {
   document.getElementById('W1').addEventListener('click', loadW1Chart);
   document.getElementById('MN').addEventListener('click', loadMNChart);
 
-
+  document.querySelectorAll('input[name="symbol"]').forEach(radio => {
+    radio.addEventListener('change', () => {
+      autoRefreshChart();
+    });
+  });
   // 默认加载K线图
   loadM5Chart();
 });
