@@ -11,5 +11,5 @@ public final class Yahoo {
   public static final String ENDPOINT_QUOTE = "/finance/quote";
 
   public static final String VERSION_CHART = "/v8";
-  public static final String ENDPOINT_CHART = "/finance/chart/{symbol}";
+  public static final String ENDPOINT_CHART = "/finance/chart/";
 }

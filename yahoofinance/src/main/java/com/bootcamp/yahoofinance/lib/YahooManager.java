@@ -47,7 +47,8 @@ public class YahooManager {
     return responseDto.getBody();
   }
 
-  public YahooOHLCDto getOhlcDto(RestTemplate restTemplate) {
+  public YahooOHLCDto getOhlcDto(RestTemplate restTemplate, String stockcode,
+      Long fromTimeStamp, Long toTimeStamp) {
     CookieManager cookieManager = new CookieManager(restTemplate);
     String cookieHeader = cookieManager.getCookie();
     restTemplate = cookieManager.getRestTemplate();
@@ -58,8 +59,12 @@ public class YahooManager {
     restTemplate = crumbManager.getRestTemplate();
     headers = crumbManager.getHeaders();
 
-    String url =
-        "https://query1.finance.yahoo.com/v8/finance/chart/0388.HK?period1=1388563200&period2=1509694074&interval=1d&events=history&crumb=" + crumb;
+    String url = UriComponentsBuilder.newInstance().scheme("https") //
+    .host(Yahoo.DOMAIN).path(Yahoo.VERSION_CHART).path(Yahoo.ENDPOINT_CHART) //
+    .build().toUriString() + stockcode + "?period1=" + fromTimeStamp //
+    + "&period2=" + toTimeStamp + "&interval=1d&events=history&crumb="
+            + crumb;
+
 
     ResponseEntity<YahooOHLCDto> responseDto = restTemplate.exchange(url,
         HttpMethod.GET, new HttpEntity<>(headers), YahooOHLCDto.class);

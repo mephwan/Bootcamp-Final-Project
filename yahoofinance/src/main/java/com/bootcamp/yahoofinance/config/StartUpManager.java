@@ -6,7 +6,6 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.util.ArrayList;
-import java.util.LinkedList;
 import java.util.List;
 import java.util.Optional;
 import java.util.concurrent.TimeUnit;
@@ -54,18 +53,21 @@ public class StartUpManager implements CommandLineRunner {
   @Override
   public void run(String... args) throws JsonProcessingException {
 
-    addStockListEntity();
+    List<String> stockCodeList = addStockListEntity();
 
-    getStockPriceFromYahoo();
+    getStockPriceFromYahoo(stockCodeList);
 
-    getOHLC();
+    for (String stockCode : stockCodeList) {
+      getOHLC(stockCode, 2);
 
-    setToRedis();
+    }
+
+    setToRedis(stockCodeList);
 
   }
 
 
-  private void addStockListEntity() {
+  private List<String> addStockListEntity() {
     List<StockListEntity> stockList = new ArrayList<>();
 
     stockList.add(new StockListEntity("0700.HK", "HK"));
@@ -95,10 +97,13 @@ public class StartUpManager implements CommandLineRunner {
 
     this.stockListRepository.deleteAll();
     this.stockListRepository.saveAll(stockList);
+
+    return stockList.stream().map(e -> e.getSymbol())
+        .collect(Collectors.toList());
   }
 
-  private void getStockPriceFromYahoo() {
-    List<String> stockCodeList = this.stockListRepository.findAll().stream()
+  private void getStockPriceFromYahoo(List<String> stockCodeList) {
+    stockCodeList = this.stockListRepository.findAll().stream()
         .map(e -> e.getSymbol()).collect(Collectors.toList());
 
     for (String stockCode : stockCodeList) {
@@ -150,9 +155,10 @@ public class StartUpManager implements CommandLineRunner {
     }
   }
 
-  private void setToRedis() throws JsonProcessingException {
+  private void setToRedis(List<String> stockCodeList)
+      throws JsonProcessingException {
     LocalDate lastTradeDate = null;
-    List<String> stockCodeList = this.stockListRepository.findAll().stream()
+    stockCodeList = this.stockListRepository.findAll().stream()
         .map(e -> e.getSymbol()).collect(Collectors.toList());
 
     for (String stockCode : stockCodeList) {
@@ -179,8 +185,29 @@ public class StartUpManager implements CommandLineRunner {
     }
   }
 
-  private void getOHLC() {
-    YahooOHLCDto yahooOHLCDto = this.yahooManager.getOhlcDto(this.restTemplate);
+  private void getOHLC(String stockCode, int year) {
+
+    Long fromTimeStamp = LocalDate.now().plusYears(-1 * year)
+        .atStartOfDay(ZoneId.systemDefault()).toInstant().getEpochSecond();
+    Long toTimeStamp = LocalDate.now().atStartOfDay(ZoneId.systemDefault())
+        .toInstant().getEpochSecond();
+
+    YahooOHLCDto yahooOHLCDto = null;
+
+    while (yahooOHLCDto == null) {
+
+      System.out.println("Getting OHLC for " + stockCode + ".........");
+      yahooOHLCDto = this.yahooManager.getOhlcDto(this.restTemplate,
+      stockCode, fromTimeStamp, toTimeStamp);
+
+      try {
+        TimeUnit.SECONDS.sleep(5);
+      } catch (InterruptedException e) {
+        System.out.println("Retry......");
+      }
+
+    }
+
     List<Long> timestemp =
         yahooOHLCDto.getChart().getResult().get(0).getTimestamp();
     List<Double> high = yahooOHLCDto.getChart().getResult().get(0)
@@ -192,21 +219,24 @@ public class StartUpManager implements CommandLineRunner {
     List<Double> close = yahooOHLCDto.getChart().getResult().get(0)
         .getIndicators().getQuote().get(0).getClose();
 
-    List<StockPriceOHLCEntity> stockPriceOHLCEntities = new LinkedList<>();
-
     for (int i = 0; i < timestemp.size(); i++) {
-      stockPriceOHLCEntities.add(StockPriceOHLCEntity.builder()
-          .symbol("0388.HK") //
-          .open(open.get(i)) //
-          .high(high.get(i)) //
-          .low(low.get(i)) //
-          .close(close.get(i)) //
-          .timestamp(timestemp.get(i)) //
-          .date(LocalDateTime.ofInstant(Instant.ofEpochSecond(timestemp.get(i)), ZoneId.systemDefault()).toLocalDate())
-          .build());
-    }
 
-    this.stockPriceOHLCRepository.saveAll(stockPriceOHLCEntities);
+      if (!this.stockPriceOHLCRepository.existsBySymbolAndTimestamp(stockCode,
+          timestemp.get(i)) && close.get(i) != null) {
+
+        this.stockPriceOHLCRepository.save(StockPriceOHLCEntity.builder()
+            .symbol(stockCode) //
+            .open(open.get(i)) //
+            .high(high.get(i)) //
+            .low(low.get(i)) //
+            .close(close.get(i)) //
+            .timestamp(timestemp.get(i)) //
+            .date(
+                LocalDateTime.ofInstant(Instant.ofEpochSecond(timestemp.get(i)),
+                    ZoneId.systemDefault()).toLocalDate())
+            .build());
+      }
+    }
 
   }
 }
