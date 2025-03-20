@@ -20,11 +20,13 @@ public class CandleStick {
   }
 
   public enum TYPE {
-    DAY,;
+    DAY,WEEK,MONTH,;
 
     public static CandleStick.TYPE of(String type) {
       return switch (type) {
         case "1d" -> CandleStick.TYPE.DAY;
+        case "1w" -> CandleStick.TYPE.WEEK;
+        case "mn" -> CandleStick.TYPE.MONTH;
         default -> throw new RuntimeException();
       };
     }

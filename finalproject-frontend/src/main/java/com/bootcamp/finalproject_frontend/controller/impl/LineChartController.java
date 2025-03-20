@@ -36,7 +36,7 @@ public class LineChartController implements LineChartOperation {
   private List<LinePoint> getPricePointByFiveMinute() {
 
     StockPriceDto stockpriceDto = this.restTemplate.getForObject(
-        "http://localhost:8080/stock?stockCode=0005.HK", StockPriceDto.class);
+        "http://localhost:8080/stock/m5?stockCode=0005.HK", StockPriceDto.class);
 
     return stockpriceDto.getData().stream()
         .map(e -> new LinePoint(e.getMarketDateTime().getYear(),

@@ -45,8 +45,8 @@ document.addEventListener("DOMContentLoaded", function () {
   }
 
   // 加载K线图
-  async function loadCandleChart() {
-    currentChartType = 'candle';
+  async function loadD1Chart() {
+    currentChartType = 'd1';
     destroyChart();
 
     chart = LightweightCharts.createChart(document.getElementById('chart-container'), {
@@ -96,9 +96,111 @@ document.addEventListener("DOMContentLoaded", function () {
     }
   }
 
+  async function loadW1Chart() {
+    currentChartType = 'w1';
+    destroyChart();
+
+    chart = LightweightCharts.createChart(document.getElementById('chart-container'), {
+      ...baseChartConfig,
+      timeScale: {
+        ...baseChartConfig.timeScale,
+        tickMarkFormatter: timeFormatter('candle')
+      }
+    });
+
+    currentSeries = chart.addCandlestickSeries({
+      upColor: "#26a69a",
+      downColor: "#ef5350",
+      borderUpColor: "#26a69a",
+      borderDownColor: "#ef5350",
+      wickUpColor: "#26a69a",
+      wickDownColor: "#ef5350",
+    });
+
+    chart.applyOptions({
+      timeScale: { barSpacing: 20 }
+    });
+
+    try {
+      const params = new URLSearchParams({ interval: "1w" });
+      const response = await fetch(`/v1/chart/candle?${params}`);
+      const data = await response.json();
+      
+      const stockData = data
+        .filter(item => item.date && item.open && item.high && item.low && item.close)
+        .map(item => ({
+          time: Math.floor(Number(item.date)),
+          open: item.open,
+          high: item.high,
+          low: item.low,
+          close: item.close,
+        }))
+        .sort((a, b) => a.time - b.time);
+
+      currentSeries.setData(stockData);
+      chart.timeScale().setVisibleRange({
+        from: stockData[0].time,
+        to: stockData[stockData.length - 1].time
+      });
+    } catch (error) {
+      console.error("Error loading candle chart:", error);
+    }
+  }
+
+  async function loadMNChart() {
+    currentChartType = 'mn';
+    destroyChart();
+
+    chart = LightweightCharts.createChart(document.getElementById('chart-container'), {
+      ...baseChartConfig,
+      timeScale: {
+        ...baseChartConfig.timeScale,
+        tickMarkFormatter: timeFormatter('candle')
+      }
+    });
+
+    currentSeries = chart.addCandlestickSeries({
+      upColor: "#26a69a",
+      downColor: "#ef5350",
+      borderUpColor: "#26a69a",
+      borderDownColor: "#ef5350",
+      wickUpColor: "#26a69a",
+      wickDownColor: "#ef5350",
+    });
+
+    chart.applyOptions({
+      timeScale: { barSpacing: 20 }
+    });
+
+    try {
+      const params = new URLSearchParams({ interval: "mn" });
+      const response = await fetch(`/v1/chart/candle?${params}`);
+      const data = await response.json();
+      
+      const stockData = data
+        .filter(item => item.date && item.open && item.high && item.low && item.close)
+        .map(item => ({
+          time: Math.floor(Number(item.date)),
+          open: item.open,
+          high: item.high,
+          low: item.low,
+          close: item.close,
+        }))
+        .sort((a, b) => a.time - b.time);
+
+      currentSeries.setData(stockData);
+      chart.timeScale().setVisibleRange({
+        from: stockData[0].time,
+        to: stockData[stockData.length - 1].time
+      });
+    } catch (error) {
+      console.error("Error loading candle chart:", error);
+    }
+  }
+
   // 加载折线图
-  async function loadLineChart() {
-    currentChartType = 'line';
+  async function loadM5Chart() {
+    currentChartType = 'm5';
     destroyChart();
 
     chart = LightweightCharts.createChart(document.getElementById('chart-container'), {
@@ -142,10 +244,14 @@ document.addEventListener("DOMContentLoaded", function () {
   }
 
   function autoRefreshChart() {
-    if (currentChartType === 'candle') {
-      loadCandleChart();
-    } else {
-      loadLineChart();
+    if (currentChartType === 'd1') {
+      loadD1Chart();
+    } else if (currentChartType === 'm5') {
+      loadM5Chart();
+    } else if (currentChartType === 'w1') {
+      loadW1Chart();
+    } else if (currentChartType === 'mn') {
+      loadMNChart();
     }
   }
 
@@ -153,9 +259,12 @@ document.addEventListener("DOMContentLoaded", function () {
   setInterval(autoRefreshChart, 10000);
 
   // 绑定按钮事件
-  document.getElementById('candleChartBtn').addEventListener('click', loadCandleChart);
-  document.getElementById('lineChartBtn').addEventListener('click', loadLineChart);
+  document.getElementById('D1').addEventListener('click', loadD1Chart);
+  document.getElementById('M5').addEventListener('click', loadM5Chart);
+  document.getElementById('W1').addEventListener('click', loadW1Chart);
+  document.getElementById('MN').addEventListener('click', loadMNChart);
+
 
   // 默认加载K线图
-  loadCandleChart();
+  loadM5Chart();
 });
