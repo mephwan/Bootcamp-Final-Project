@@ -47,7 +47,7 @@ public class SchedulingTask {
   @Autowired
   private RedisManager redisManager;
 
-  @Scheduled(cron = "10 */5 * * * MON-FRI")
+  @Scheduled(cron = "10 */5 * * * *")
   public void getYahooFiveMintus() throws Exception {
 
     List<String> stockCodeList = stockListRepository.findAll().stream()
@@ -117,7 +117,7 @@ public class SchedulingTask {
     }
   }
 
-  @Scheduled(cron = "10 0 8 * * MON-FRI")
+  @Scheduled(cron = "10 0 8 * * *")
   public void getOHLCAtEight() {
 
     List<String> stockCodeList = this.stockListRepository.findAll().stream()

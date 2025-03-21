@@ -14,6 +14,7 @@ public class DateManager {
   private DateManager(Zone zone) {
     this.zoneId = switch (zone) {
       case HK -> ZoneId.of("UTC");
+      case US -> ZoneId.of("America/New_York");
     };
   }
 
@@ -26,7 +27,7 @@ public class DateManager {
   }
 
   public static enum Zone {
-    HK,;
+    HK,US,;
   }
 
 }
