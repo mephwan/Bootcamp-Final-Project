@@ -1,6 +1,5 @@
 package com.bootcamp.finalproject_frontend.controller.impl;
 
-import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -23,38 +22,19 @@ public class CandleChartController implements CandleChartOperation {
   private RestTemplate restTemplate;
 
   @Override
-  public List<CandleStickDTO> getCandleChart(String interval) {
+  public List<CandleStickDTO> getCandleChart(String interval, String symbol) {
     List<CandleStick> candleSticks = switch (CandleStick.TYPE.of(interval)) {
-      case DAY -> getCandlesByDay();
-      case WEEK -> getCandlesByWeek();
-      case MONTH -> getCandlesByMonth();
+      case DAY -> getCandlesByDay(symbol);
+      case WEEK -> getCandlesByWeek(symbol);
+      case MONTH -> getCandlesByMonth(symbol);
     };
     return candleSticks.stream().map(e -> this.chartMapper.map(e))
         .collect(Collectors.toList());
   }
 
-  private List<CandleStick> getCandlesByDay() {
+  private List<CandleStick> getCandlesByDay(String symbol) {
 
-    String url = "http://localhost:8080/stock/d1?stockCode=0005.HK";
-
-    StockOHLCDTO stockOHLCDTO = this.restTemplate.getForObject(url, StockOHLCDTO.class);
-    
-    return stockOHLCDTO.getData().stream().map(e -> 
-      new CandleStick(e.getMarketDate().getYear(), 
-      e.getMarketDate().getMonthValue(), 
-      e.getMarketDate().getDayOfMonth(), 
-      e.getOpen(), 
-      e.getHigh(), 
-      e.getLow(), 
-      e.getClose()))
-      .collect(Collectors.toList());
-        //new CandleStick(2024, 1, 10, 105.0, 111.0, 104.0, 111.0) // 2024-01-10
-    
-  }
-
-  private List<CandleStick> getCandlesByWeek() {
-
-    String url = "http://localhost:8080/stock/w1?stockCode=0005.HK";
+    String url = "http://localhost:8080/stock/d1?stockCode=" + symbol;
 
     StockOHLCDTO stockOHLCDTO = this.restTemplate.getForObject(url, StockOHLCDTO.class);
     
@@ -71,9 +51,28 @@ public class CandleChartController implements CandleChartOperation {
     
   }
 
-  private List<CandleStick> getCandlesByMonth() {
+  private List<CandleStick> getCandlesByWeek(String symbol) {
 
-    String url = "http://localhost:8080/stock/mn?stockCode=0005.HK";
+    String url = "http://localhost:8080/stock/w1?stockCode=" + symbol;
+
+    StockOHLCDTO stockOHLCDTO = this.restTemplate.getForObject(url, StockOHLCDTO.class);
+    
+    return stockOHLCDTO.getData().stream().map(e -> 
+      new CandleStick(e.getMarketDate().getYear(), 
+      e.getMarketDate().getMonthValue(), 
+      e.getMarketDate().getDayOfMonth(), 
+      e.getOpen(), 
+      e.getHigh(), 
+      e.getLow(), 
+      e.getClose()))
+      .collect(Collectors.toList());
+        //new CandleStick(2024, 1, 10, 105.0, 111.0, 104.0, 111.0) // 2024-01-10
+    
+  }
+
+  private List<CandleStick> getCandlesByMonth(String symbol) {
+
+    String url = "http://localhost:8080/stock/mn?stockCode=" + symbol;
 
     StockOHLCDTO stockOHLCDTO = this.restTemplate.getForObject(url, StockOHLCDTO.class);
     

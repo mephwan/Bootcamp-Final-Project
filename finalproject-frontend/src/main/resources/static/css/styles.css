@@ -1,58 +1,126 @@
-body {
-  background-color: #0e0d0d; /* Black background */
-  color: #dcdcdc; /* White text */
-  font-family: Arial, sans-serif;
-  justify-content: center; /* Center the content vertically */
-  align-items: center; /* Center the content horizontally */
+/* styles.css */
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+  font-family: 'Roboto', sans-serif;
 }
 
-#chart-container {
-  background-color: black;
-  position: relative;
+body {
+  background: #f0f2f5;
 }
+
 .container {
   display: flex;
-  gap: 20px;
+  gap: 25px;
+  padding: 25px;
+  max-width: 1800px;
+  margin: 0 auto;
 }
 
+/* 右側列表樣式 */
 .symbol-list {
-  width: 150px;
-  background: #1e1e1e;
-  padding: 15px;
-  border-radius: 8px;
-  border: 1px solid #333333;
-  box-shadow: 0 2px 4px rgba(0,0,0,0.3);
+  width: 350px;
+  background: #ffffff;
+  border-radius: 12px;
+  padding: 25px;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+  height: calc(100vh - 40px);
+  overflow-y: auto;
+}
+
+.symbol-list h1 {
+  font-size: 17px;
+  color: #2d3436;
+  margin: 18px 0 12px;
+  padding-bottom: 12px;
+  border-bottom: 2px solid #f0f2f5;
 }
 
 .symbol-option {
   display: block;
-  margin: 10px 0;
-  padding: 8px;
-  border-radius: 4px;
+  padding: 14px 18px;
+  margin: 7px 0;
+  border-radius: 8px;
   cursor: pointer;
-  transition: all 0.3s ease;
-  color: #ffffff;
+  transition: all 0.2s;
+  background: #f8f9fa;
+  border: 1px solid #e9ecef;
+  font-size: 15px;
 }
 
 .symbol-option:hover {
-  background: #333333;
+  background: #e9ecef;
+  transform: translateX(3px);
 }
 
 .symbol-option input[type="radio"] {
-  accent-color: #4CAF50; /* 修改radio button顏色 */
-  margin-right: 8px;
+  margin-right: 10px;
+  accent-color: #4a90e2;
+}
+
+/* 圖表區域樣式 */
+.chart-wrapper {
+  flex: 1;
+  background: #ffffff;
+  border-radius: 12px;
+  padding: 20px;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+}
+
+.chart-wrapper h1 {
+  color: #2d3436;
+  margin-bottom: 20px;
+  font-size: 24px;
+}
+
+.chart-controls {
+  margin-bottom: 20px;
+  display: flex;
+  gap: 10px;
 }
 
 .chart-controls button {
-  background: #2d2d2d;
-  color: #fff;
-  border: 1px solid #444;
-  padding: 8px 12px;
-  border-radius: 4px;
+  padding: 8px 20px;
+  border: none;
+  border-radius: 6px;
+  background: #f8f9fa;
+  color: #495057;
   cursor: pointer;
-  transition: all 0.3s ease;
+  transition: all 0.2s;
+  border: 1px solid #e9ecef;
 }
 
 .chart-controls button:hover {
-  background: #3d3d3d;
+  background: #4a90e2;
+  color: white;
+}
+
+.chart-controls button.active {
+  background: #4a90e2;
+  color: white;
+}
+
+#chart-container {
+  height: 700px;
+  border-radius: 8px;
+  overflow: hidden;
+  border: 1px solid #e9ecef;
+}
+
+/* 響應式設計 */
+@media (max-width: 1200px) {
+  .container {
+    flex-direction: column;
+  }
+  
+  .symbol-list {
+    width: 100%;
+    padding: 20px;
+    height: auto;
+  }
+  
+  #chart-container {
+    height: 500px;
+  }
 }

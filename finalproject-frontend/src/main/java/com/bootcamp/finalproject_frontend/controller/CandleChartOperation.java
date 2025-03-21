@@ -8,5 +8,5 @@ import com.bootcamp.finalproject_frontend.dto.CandleStickDTO;
 public interface CandleChartOperation {
   
   @GetMapping(value = "/chart/candle")
-  List<CandleStickDTO> getCandleChart(@RequestParam String interval);
+  List<CandleStickDTO> getCandleChart(@RequestParam String interval, @RequestParam String symbol);
 }

@@ -285,6 +285,14 @@ document.addEventListener("DOMContentLoaded", function () {
       autoRefreshChart();
     });
   });
+
+document.querySelectorAll('.chart-controls button').forEach(button => {
+  button.addEventListener('click', function() {
+    document.querySelector('.chart-controls .active')?.classList.remove('active');
+    this.classList.add('active');
+  });
+});
+
   // 默认加载K线图
   loadM5Chart();
 });
