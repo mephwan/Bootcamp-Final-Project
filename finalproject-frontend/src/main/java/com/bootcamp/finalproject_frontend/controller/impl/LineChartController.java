@@ -45,7 +45,8 @@ public class LineChartController implements LineChartOperation {
         .map(e -> new LinePoint(e.getMarketDateTime().getYear(),
             e.getMarketDateTime().getMonthValue(),
             e.getMarketDateTime().getDayOfMonth(),
-            e.getMarketDateTime().atZone(ZoneId.of("Asia/Hong_Kong")).getHour(), e.getMarketDateTime().getMinute(),
+            e.getMarketDateTime().getHour(), 
+            e.getMarketDateTime().getMinute(),
             e.getRegularMarketPrice()))
         .collect(Collectors.toList());
 

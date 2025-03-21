@@ -26,7 +26,6 @@ document.addEventListener("DOMContentLoaded", function () {
     },
   };
 
-  // 时间格式化函数
   function timeFormatter(type) {
     return (time) => {
       const date = new Date(time * 1000);
