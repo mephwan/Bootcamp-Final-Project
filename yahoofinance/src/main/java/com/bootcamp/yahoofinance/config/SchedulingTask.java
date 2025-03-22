@@ -73,7 +73,14 @@ public class SchedulingTask {
         .getResult().stream() //
         .filter(e -> !stockPriceRepository.existsBySymbolAndRegularMarketTime(
             e.getSymbol(), e.getRegularMarketTime())) //
-        .map(e -> StockPriceEntity.builder() //
+        .map(e -> {
+          ZoneId zone = ZoneId.systemDefault();
+          if (e.getSymbol().contains("HK")) {
+            zone = ZoneId.systemDefault();
+          } else {
+            zone = ZoneId.of("America/New_York");
+          }
+          return StockPriceEntity.builder() //
             .symbol(e.getSymbol()) //
             .regularMarketTime(e.getRegularMarketTime()) //
             .regularMarketPrice(e.getRegularMarketPrice()) //
@@ -81,8 +88,9 @@ public class SchedulingTask {
             .type("M5") //
             .marketDateTime(LocalDateTime.ofInstant(
                 Instant.ofEpochSecond(e.getRegularMarketTime()),
-                ZoneId.systemDefault())) //
-            .build()) //
+                zone)) //
+            .build();
+          }) //
         .collect(Collectors.toList());
 
     stockPriceEntities

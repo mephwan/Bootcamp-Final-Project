@@ -7,6 +7,7 @@ import java.time.ZoneId;
 import java.time.temporal.TemporalAdjusters;
 import java.time.temporal.WeekFields;
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Locale;
@@ -208,10 +209,12 @@ public class YahooServiceImpl implements YahooService {
                                         .collect(Collectors.toList());
 
                         Double open = oneWeekOHLC.get(0).getOpen();
+
+                        System.out.println("AAAAAAAAAAAAAAAAAAAAAAAA" + oneWeekOHLC.get(0).getOpen());
                         Double high = oneWeekOHLC.stream().map(e -> e.getHigh())
                                         .max((a, b) -> a.compareTo(b)).get();
                         Double low = oneWeekOHLC.stream().map(e -> e.getLow())
-                                        .min((a, b) -> b.compareTo(a)).get();
+                                        .min(Comparator.naturalOrder()).get();
                         Double close = oneWeekOHLC.get(oneWeekOHLC.size() - 1)
                                         .getClose();
 
@@ -291,7 +294,7 @@ public class YahooServiceImpl implements YahooService {
                                         .map(e -> e.getHigh())
                                         .max((a, b) -> a.compareTo(b)).get();
                         Double low = oneMonthOHLC.stream().map(e -> e.getLow())
-                                        .min((a, b) -> b.compareTo(a)).get();
+                                        .min(Comparator.naturalOrder()).get();
                         Double close = oneMonthOHLC.get(oneMonthOHLC.size() - 1)
                                         .getClose();
 
@@ -345,7 +348,7 @@ public class YahooServiceImpl implements YahooService {
                                         .max((a, b) -> (a.compareTo(b))).get();
                         Double low = lastDatePrices.stream()
                                         .map(e -> e.getRegularMarketPrice())
-                                        .min((a, b) -> (b.compareTo(a))).get();
+                                        .min(Comparator.naturalOrder()).get();
                         Double close = lastDatePrices
                                         .get(lastDatePrices.size() - 1)
                                         .getRegularMarketPrice();
