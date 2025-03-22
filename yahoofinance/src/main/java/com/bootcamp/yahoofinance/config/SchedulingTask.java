@@ -137,6 +137,10 @@ public class SchedulingTask {
         .toInstant().getEpochSecond();
 
     for (String stockCode : stockCodeList) {
+      ZoneId zone = ZoneId.systemDefault();
+      if (!stockCode.contains("HK")) {
+        zone = ZoneId.of("America/New_York");
+      }
       YahooOHLCDto yahooOHLCDto = null;
 
       while (yahooOHLCDto == null) {
@@ -177,8 +181,7 @@ public class SchedulingTask {
                   .close(close.get(i)) //
                   .timestamp(timestemp.get(i)) //
                   .date(LocalDateTime
-                      .ofInstant(Instant.ofEpochSecond(timestemp.get(i)),
-                          ZoneId.systemDefault())
+                      .ofInstant(Instant.ofEpochSecond(timestemp.get(i)), zone)
                       .toLocalDate())
                   .build());
         }

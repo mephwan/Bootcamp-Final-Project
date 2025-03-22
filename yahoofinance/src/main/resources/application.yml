@@ -1,11 +1,11 @@
 server:
-  port: 8090
+  port: 8080
 
 api:
   cookie: "https://fc.yahoo.com"
 
 database:
-  postgres: "finalprojecttest"
+  postgres: "db_finalproject"
 
 spring.datasource:
   # driverClassName: "org.hibernate.dialect.PostgreSQLDialect"

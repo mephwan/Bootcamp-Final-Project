@@ -26,6 +26,19 @@ document.addEventListener("DOMContentLoaded", function () {
     },
   };
 
+  function calculateMA(data, period, getValue) {
+    const maData = [];
+    for (let i = period - 1; i < data.length; i++) {
+      let sum = 0;
+      for (let j = i - (period - 1); j <= i; j++) {
+        sum += getValue(data[j]);
+      }
+      const average = sum / period;
+      maData.push({ time: data[i].time, value: average });
+    }
+    return maData;
+  }
+
   function timeFormatter(type) {
     return (time) => {
       const date = new Date(time * 1000);
@@ -96,6 +109,15 @@ document.addEventListener("DOMContentLoaded", function () {
         }))
         .sort((a, b) => a.time - b.time);
 
+        const maPeriod = 20;
+        const maData = calculateMA(stockData, maPeriod, d => d.close);
+        const maSeries = chart.addLineSeries({
+          color: '#FFA500',
+          lineWidth: 2,
+          title: 'MA 20',
+        });
+        maSeries.setData(maData);
+        
       currentSeries.setData(stockData);
       chart.timeScale().setVisibleRange({
         from: stockData[0].time,
@@ -146,6 +168,15 @@ document.addEventListener("DOMContentLoaded", function () {
           close: item.close,
         }))
         .sort((a, b) => a.time - b.time);
+      
+      const maPeriod = 20;
+      const maData = calculateMA(stockData, maPeriod, d => d.close);
+      const maSeries = chart.addLineSeries({
+        color: '#FFA500',
+        lineWidth: 2,
+        title: 'MA 20',
+      });
+      maSeries.setData(maData);
 
       currentSeries.setData(stockData);
       chart.timeScale().setVisibleRange({
@@ -198,6 +229,15 @@ document.addEventListener("DOMContentLoaded", function () {
         }))
         .sort((a, b) => a.time - b.time);
 
+        const maPeriod = 20;
+        const maData = calculateMA(stockData, maPeriod, d => d.close);
+        const maSeries = chart.addLineSeries({
+          color: '#FFA500',
+          lineWidth: 2,
+          title: 'MA 20',
+        });
+        maSeries.setData(maData);
+
       currentSeries.setData(stockData);
       chart.timeScale().setVisibleRange({
         from: stockData[0].time,
@@ -246,6 +286,15 @@ document.addEventListener("DOMContentLoaded", function () {
         }))
         .sort((a, b) => a.time - b.time);
 
+        const maPeriod = 20;
+        const maData = calculateMA(stockData, maPeriod, d => d.close);
+        const maSeries = chart.addLineSeries({
+          color: '#FFA500',
+          lineWidth: 2,
+          title: 'MA 20',
+        });
+        maSeries.setData(maData);
+
       currentSeries.setData(stockData);
       chart.timeScale().setVisibleRange({
         from: stockData[0].time,
@@ -291,6 +340,24 @@ document.querySelectorAll('.chart-controls button').forEach(button => {
     this.classList.add('active');
   });
 });
+
+document.querySelectorAll('input[name="symbol"]').forEach(radio => {
+  radio.addEventListener('change', function() {
+    if (this.checked) {
+      // 获取label文本并处理
+      const labelText = this.parentElement.textContent.trim();
+      // 使用正则表达式分割所有空白符
+      const parts = labelText.split(/\s+/);
+      // 移除股票代码部分（第一个元素）
+      const stockName = parts.slice(1).join(' ');
+      
+      // 更新图表标题
+      document.getElementById('chart-title').textContent = `${stockName} Chart`;
+    }
+  });
+});
+
+document.querySelector('input[name="symbol"]:checked').dispatchEvent(new Event('change'));
 
   // 默认加载K线图
   loadM5Chart();

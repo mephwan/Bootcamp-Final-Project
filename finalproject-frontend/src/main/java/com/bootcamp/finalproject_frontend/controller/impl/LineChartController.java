@@ -26,7 +26,7 @@ public class LineChartController implements LineChartOperation {
 
   @Override
   @GetMapping("/chart/line")
-  public List<LinePointDTO> getLineChart(@RequestParam("interval") String interval, @RequestParam("symbol") String symbol) {
+  public List<LinePointDTO> getLineChart(String interval, String symbol) {
 
     List<LinePoint> pricePoints = switch (LinePoint.TYPE.of(interval)) {
       case FIVE_MIN -> getPricePointByFiveMinute(symbol);

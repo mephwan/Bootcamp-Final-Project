@@ -1,12 +1,9 @@
 package com.bootcamp.yahoofinance.service.impl;
 
 import java.time.DayOfWeek;
-import java.time.Instant;
 import java.time.LocalDate;
 import java.time.ZoneId;
-import java.time.temporal.TemporalAdjusters;
 import java.time.temporal.WeekFields;
-import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.LinkedList;
 import java.util.List;
@@ -21,7 +18,6 @@ import com.bootcamp.yahoofinance.entity.StockPriceEntity;
 import com.bootcamp.yahoofinance.entity.StockPriceOHLCEntity;
 import com.bootcamp.yahoofinance.DTO.StockOHLCDTO;
 import com.bootcamp.yahoofinance.exception.BusinessException;
-import com.bootcamp.yahoofinance.lib.RedisManager;
 import com.bootcamp.yahoofinance.repository.StockPriceOHLCRepository;
 import com.bootcamp.yahoofinance.repository.StockPriceRepository;
 import com.bootcamp.yahoofinance.service.YahooService;
@@ -34,9 +30,6 @@ public class YahooServiceImpl implements YahooService {
 
         @Autowired
         private StockPriceOHLCRepository stockPriceOHLCRepository;
-
-        @Autowired
-        private RedisManager redisManager;
 
         @Override
         public StockDTO getPrice(String stockCode)
@@ -144,12 +137,17 @@ public class YahooServiceImpl implements YahooService {
 
                                 dailyOHLC.add(StockOHLCDTO.StockData.builder() //
                                                 .symbol(stockCode) //
-                                                .timestamp(oneDayOHLC.get().getTimestamp()) //
-                                                .marketDate(oneDayOHLC.get().getMarketDate()) //
-                                                .open(oneDayOHLC.get().getOpen()) //
-                                                .high(oneDayOHLC.get().getHigh()) //
+                                                .timestamp(oneDayOHLC.get()
+                                                                .getTimestamp()) //
+                                                .marketDate(oneDayOHLC.get()
+                                                                .getMarketDate()) //
+                                                .open(oneDayOHLC.get()
+                                                                .getOpen()) //
+                                                .high(oneDayOHLC.get()
+                                                                .getHigh()) //
                                                 .low(oneDayOHLC.get().getLow()) //
-                                                .close(oneDayOHLC.get().getClose()) //
+                                                .close(oneDayOHLC.get()
+                                                                .getClose()) //
                                                 .build());
                         }
 
@@ -200,17 +198,22 @@ public class YahooServiceImpl implements YahooService {
                 for (int i = 0; i < 52; i++) {
 
                         LocalDate weekDate = today.plusWeeks(-1 * i);
+                        
+                        if(weekDate.getDayOfWeek().equals(DayOfWeek.SUNDAY)) {
+                                weekDate = weekDate.plusWeeks(-1);
+                        }
+
+                        LocalDate finalWeekDate = weekDate;
 
                         List<StockOHLCDTO.StockData> oneWeekOHLC = datas
                                         .stream() //
                                         .filter(e -> getDatesInSameWeek(
                                                         e.getMarketDate(),
-                                                        weekDate)) //
+                                                        finalWeekDate)) //
                                         .collect(Collectors.toList());
 
                         Double open = oneWeekOHLC.get(0).getOpen();
 
-                        System.out.println("AAAAAAAAAAAAAAAAAAAAAAAA" + oneWeekOHLC.get(0).getOpen());
                         Double high = oneWeekOHLC.stream().map(e -> e.getHigh())
                                         .max((a, b) -> a.compareTo(b)).get();
                         Double low = oneWeekOHLC.stream().map(e -> e.getLow())
@@ -236,7 +239,7 @@ public class YahooServiceImpl implements YahooService {
 
                 }
 
-                return StockOHLCDTO.builder().symbol(stockCode).timeFrame("MN")
+                return StockOHLCDTO.builder().symbol(stockCode).timeFrame("W1")
                                 .data(weeklyOHLC).build();
         }
 
@@ -322,52 +325,44 @@ public class YahooServiceImpl implements YahooService {
         }
 
         private StockOHLCDTO.StockData getLastUpdateOHLC(String stockCode) {
+                ZoneId zone = ZoneId.systemDefault();
+
+                if (!stockCode.contains("HK")) {
+                        zone = ZoneId.of("America/New_York");
+                }
                 LocalDate lastDate = this.stockPriceRepository
                                 .findFirstBySymbolOrderByMarketDateTimeDesc(
                                                 stockCode)
                                 .get().getMarketDateTime().toLocalDate();
-                LocalDate lastOHLCDate = this.stockPriceOHLCRepository
-                                .findFirstBySymbolOrderByTimestampDesc(
-                                                stockCode)
-                                .get().getDate();
 
-                if (!lastDate.equals(lastOHLCDate)) {
-                        List<StockPriceEntity> lastDatePrices =
-                                        this.stockPriceRepository
-                                                        .findBySymbol(stockCode)
-                                                        .stream()
-                                                        .filter(e -> e.getMarketDateTime()
-                                                                        .toLocalDate()
-                                                                        .equals(lastDate))
-                                                        .collect(Collectors
-                                                                        .toList());
-                        Double open = lastDatePrices.get(0)
-                                        .getRegularMarketPrice();
-                        Double high = lastDatePrices.stream()
-                                        .map(e -> e.getRegularMarketPrice())
-                                        .max((a, b) -> (a.compareTo(b))).get();
-                        Double low = lastDatePrices.stream()
-                                        .map(e -> e.getRegularMarketPrice())
-                                        .min(Comparator.naturalOrder()).get();
-                        Double close = lastDatePrices
-                                        .get(lastDatePrices.size() - 1)
-                                        .getRegularMarketPrice();
+                List<StockPriceEntity> lastDatePrices = this.stockPriceRepository
+                                        .findBySymbol(stockCode).stream()
+                                        .filter(e -> e.getMarketDateTime()
+                                                        .toLocalDate()
+                                                        .equals(lastDate))
+                                        .collect(Collectors.toList());
+        
+                Double open = lastDatePrices.get(0).getRegularMarketPrice();
+                Double high = lastDatePrices.stream()
+                                .map(e -> e.getRegularMarketPrice())
+                                .max((a, b) -> (a.compareTo(b))).get();
+                Double low = lastDatePrices.stream()
+                                .map(e -> e.getRegularMarketPrice())
+                                .min(Comparator.naturalOrder()).get();
+                Double close = lastDatePrices.get(lastDatePrices.size() - 1)
+                                .getRegularMarketPrice();
 
-                        return StockOHLCDTO.StockData.builder()
-                                        .symbol(stockCode) //
-                                        .timestamp(lastOHLCDate.atStartOfDay(
-                                                        ZoneId.systemDefault())
-                                                        .toInstant()
-                                                        .toEpochMilli()) //
-                                        .marketDate(lastDate) //
-                                        .open(open) //
-                                        .high(high) //
-                                        .low(low) //
-                                        .close(close) //
-                                        .build();
-                } else {
-                        return null;
-                }
+                return StockOHLCDTO.StockData.builder().symbol(stockCode) //
+                                .timestamp(lastDate.atStartOfDay(
+                                                zone)
+                                                .toInstant().toEpochMilli()) //
+                                .marketDate(lastDate) //
+                                .open(open) //
+                                .high(high) //
+                                .low(low) //
+                                .close(close) //
+                                .build();
+
 
 
         }
