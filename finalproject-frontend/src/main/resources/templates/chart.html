@@ -95,9 +95,18 @@
         <button id="D1">D1</button>
         <button id="W1">W1</button>
         <button id="MN">MN</button>
+        <div class="ma-controls">
+          <button class="ma-btn active" data-period="0">No MA</button>
+          <button class="ma-btn" data-period="20">20 MA</button>
+          <button class="ma-btn" data-period="50">50 MA</button>
+          <button class="ma-btn" data-period="100">100 MA</button>
+          <button class="ma-btn" data-period="150">150 MA</button>
+        </div>
       </div>
       <div id="chart-container"></div>
     </div>
+
+
   <script th:src="@{/js/chart.js}"></script>
 </body>
 

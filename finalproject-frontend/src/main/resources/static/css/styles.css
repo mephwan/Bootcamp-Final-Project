@@ -124,3 +124,38 @@ body {
     height: 500px;
   }
 }
+
+.chart-controls {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  margin-bottom: 20px;
+}
+
+.ma-controls {
+  display: flex;
+  gap: 5px;
+  margin-left: auto;
+}
+
+.chart-controls button,
+.ma-controls button {
+  padding: 8px 15px;
+  border: 1px solid #444;
+  background: #1a1a1a;
+  color: #fff;
+  cursor: pointer;
+  border-radius: 4px;
+  transition: all 0.3s;
+}
+
+.chart-controls button.active,
+.ma-controls button.active {
+  background: #26a69a;
+  border-color: #26a69a;
+}
+
+.chart-controls button:hover,
+.ma-controls button:hover {
+  background: #2c2c2c;
+}

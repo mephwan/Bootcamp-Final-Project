@@ -3,6 +3,7 @@ document.addEventListener("DOMContentLoaded", function () {
   let chart = null;
   let currentSeries = null;
   let currentChartType = null;
+  let currentMAPeriod = 0;
 
   // 通用图表配置
   const baseChartConfig = {
@@ -109,14 +110,15 @@ document.addEventListener("DOMContentLoaded", function () {
         }))
         .sort((a, b) => a.time - b.time);
 
-        const maPeriod = 20;
-        const maData = calculateMA(stockData, maPeriod, d => d.close);
-        const maSeries = chart.addLineSeries({
-          color: '#FFA500',
-          lineWidth: 2,
-          title: 'MA 20',
-        });
-        maSeries.setData(maData);
+        if (currentMAPeriod > 0 && stockData.length >= currentMAPeriod) {
+          const maData = calculateMA(stockData, currentMAPeriod, d => d.close);
+          const maSeries = chart.addLineSeries({
+            color: '#FFA500',
+            lineWidth: 2,
+            title: `MA ${currentMAPeriod}`,
+          });
+          maSeries.setData(maData);
+        }
         
       currentSeries.setData(stockData);
       chart.timeScale().setVisibleRange({
@@ -169,14 +171,15 @@ document.addEventListener("DOMContentLoaded", function () {
         }))
         .sort((a, b) => a.time - b.time);
       
-      const maPeriod = 20;
-      const maData = calculateMA(stockData, maPeriod, d => d.close);
-      const maSeries = chart.addLineSeries({
-        color: '#FFA500',
-        lineWidth: 2,
-        title: 'MA 20',
-      });
-      maSeries.setData(maData);
+        if (currentMAPeriod > 0 && stockData.length >= currentMAPeriod) {
+          const maData = calculateMA(stockData, currentMAPeriod, d => d.close);
+          const maSeries = chart.addLineSeries({
+            color: '#FFA500',
+            lineWidth: 2,
+            title: `MA ${currentMAPeriod}`,
+          });
+          maSeries.setData(maData);
+        }
 
       currentSeries.setData(stockData);
       chart.timeScale().setVisibleRange({
@@ -229,14 +232,15 @@ document.addEventListener("DOMContentLoaded", function () {
         }))
         .sort((a, b) => a.time - b.time);
 
-        const maPeriod = 20;
-        const maData = calculateMA(stockData, maPeriod, d => d.close);
-        const maSeries = chart.addLineSeries({
-          color: '#FFA500',
-          lineWidth: 2,
-          title: 'MA 20',
-        });
-        maSeries.setData(maData);
+        if (currentMAPeriod > 0 && stockData.length >= currentMAPeriod) {
+          const maData = calculateMA(stockData, currentMAPeriod, d => d.close);
+          const maSeries = chart.addLineSeries({
+            color: '#FFA500',
+            lineWidth: 2,
+            title: `MA ${currentMAPeriod}`,
+          });
+          maSeries.setData(maData);
+        }
 
       currentSeries.setData(stockData);
       chart.timeScale().setVisibleRange({
@@ -286,14 +290,15 @@ document.addEventListener("DOMContentLoaded", function () {
         }))
         .sort((a, b) => a.time - b.time);
 
-        const maPeriod = 20;
-        const maData = calculateMA(stockData, maPeriod, d => d.close);
-        const maSeries = chart.addLineSeries({
-          color: '#FFA500',
-          lineWidth: 2,
-          title: 'MA 20',
-        });
-        maSeries.setData(maData);
+        if (currentMAPeriod > 0 && stockData.length >= currentMAPeriod) {
+          const maData = calculateMA(stockData, currentMAPeriod, d => d.close);
+          const maSeries = chart.addLineSeries({
+            color: '#FFA500',
+            lineWidth: 2,
+            title: `MA ${currentMAPeriod}`,
+          });
+          maSeries.setData(maData);
+        }
 
       currentSeries.setData(stockData);
       chart.timeScale().setVisibleRange({
@@ -354,6 +359,21 @@ document.querySelectorAll('input[name="symbol"]').forEach(radio => {
       // 更新图表标题
       document.getElementById('chart-title').textContent = `${stockName} Chart`;
     }
+  });
+});
+
+document.querySelectorAll('.ma-btn').forEach(button => {
+  button.addEventListener('click', function() {
+    const period = parseInt(this.dataset.period);
+    currentMAPeriod = period;
+    
+    // 更新按钮状态
+    document.querySelectorAll('.ma-btn').forEach(btn => 
+      btn.classList.remove('active'));
+    this.classList.add('active');
+    
+    // 刷新图表
+    autoRefreshChart();
   });
 });
 
