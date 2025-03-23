@@ -19,12 +19,12 @@ public class YahooController implements YahooOperation {
   }
 
   @Override
-  public StockOHLCDTO getDayOHLC(String stockCode) {
+  public StockOHLCDTO getDayOHLC(String stockCode) throws JsonProcessingException {
     return this.yahooService.getDayOHLC(stockCode);
   }
 
   @Override
-  public StockOHLCDTO getWeekOHLC(String stockCode) {
+  public StockOHLCDTO getWeekOHLC(String stockCode) throws JsonProcessingException {
     return this.yahooService.getWeekOHLC(stockCode);
   }
 

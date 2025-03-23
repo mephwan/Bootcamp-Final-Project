@@ -6,6 +6,7 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.util.ArrayList;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Optional;
 import java.util.concurrent.TimeUnit;
@@ -17,6 +18,7 @@ import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.client.ResourceAccessException;
 import org.springframework.web.client.RestTemplate;
 import com.bootcamp.yahoofinance.DTO.StockDTO;
+import com.bootcamp.yahoofinance.DTO.StockOHLCDTO;
 import com.bootcamp.yahoofinance.DTO.StockDTO.StockData;
 import com.bootcamp.yahoofinance.entity.StockListEntity;
 import com.bootcamp.yahoofinance.entity.StockPriceEntity;
@@ -61,8 +63,6 @@ public class StartUpManager implements CommandLineRunner {
       getOHLC(stockCode, 2);
 
     }
-
-    setToRedis(stockCodeList);
 
   }
 
@@ -155,35 +155,6 @@ public class StartUpManager implements CommandLineRunner {
     }
   }
 
-  private void setToRedis(List<String> stockCodeList)
-      throws JsonProcessingException {
-    LocalDate lastTradeDate = null;
-    stockCodeList = this.stockListRepository.findAll().stream()
-        .map(e -> e.getSymbol()).collect(Collectors.toList());
-
-    for (String stockCode : stockCodeList) {
-      LocalDate finalLastTradeDate = lastTradeDate;
-
-      StockDTO stockDTO =
-          StockDTO.builder().symbol(stockCode).timeFrame("M5")
-              .data(this.stockPriceRepository.findBySymbol(stockCode).stream()
-                  .filter(e -> e.getMarketDateTime().toLocalDate()
-                      .equals(finalLastTradeDate))
-                  .map(e -> StockData.builder().symbol(e.getSymbol())
-                      .regularMarketTime(e.getRegularMarketTime())
-                      .marketDateTime(e.getMarketDateTime())
-                      .regularMarketPrice(e.getRegularMarketPrice())
-                      .regularMarketChangePercent(
-                          e.getRegularMarketChangePercent())
-                      .build())
-                  .collect(Collectors.toList()))
-              .build();
-
-      String redisString = "5min" + stockCode;
-
-      this.redisManager.set(redisString, stockDTO, Duration.ofHours(12));
-    }
-  }
 
   private void getOHLC(String stockCode, int year) {
 
@@ -197,8 +168,8 @@ public class StartUpManager implements CommandLineRunner {
     while (yahooOHLCDto == null) {
 
       System.out.println("Getting OHLC for " + stockCode + ".........");
-      yahooOHLCDto = this.yahooManager.getOhlcDto(this.restTemplate,
-      stockCode, fromTimeStamp, toTimeStamp);
+      yahooOHLCDto = this.yahooManager.getOhlcDto(this.restTemplate, stockCode,
+          fromTimeStamp, toTimeStamp);
 
       try {
         TimeUnit.SECONDS.sleep(5);
@@ -224,19 +195,20 @@ public class StartUpManager implements CommandLineRunner {
       if (!this.stockPriceOHLCRepository.existsBySymbolAndTimestamp(stockCode,
           timestemp.get(i)) && close.get(i) != null) {
 
-        this.stockPriceOHLCRepository.save(StockPriceOHLCEntity.builder()
-            .symbol(stockCode) //
-            .open(open.get(i)) //
-            .high(high.get(i)) //
-            .low(low.get(i)) //
-            .close(close.get(i)) //
-            .timestamp(timestemp.get(i)) //
-            .date(
-                LocalDateTime.ofInstant(Instant.ofEpochSecond(timestemp.get(i)),
-                    ZoneId.systemDefault()).toLocalDate())
-            .build());
+        LocalDate marketDate =
+            LocalDateTime.ofInstant(Instant.ofEpochSecond(timestemp.get(i)),
+                ZoneId.systemDefault()).toLocalDate();
+
+        this.stockPriceOHLCRepository
+            .save(StockPriceOHLCEntity.builder().symbol(stockCode) //
+                .open(open.get(i)) //
+                .high(high.get(i)) //
+                .low(low.get(i)) //
+                .close(close.get(i)) //
+                .timestamp(timestemp.get(i)) //
+                .date(marketDate).build());
+
       }
     }
-
   }
 }

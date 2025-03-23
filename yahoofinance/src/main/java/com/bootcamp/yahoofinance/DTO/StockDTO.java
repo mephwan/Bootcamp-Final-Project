@@ -7,12 +7,14 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import lombok.ToString;
 
 @Getter
 @Setter
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
+@ToString
 public class StockDTO {
 
   private String symbol;
@@ -24,6 +26,7 @@ public class StockDTO {
   @Builder
   @AllArgsConstructor
   @NoArgsConstructor
+  @ToString
   public static class StockData {
     private String symbol;
     private Long regularMarketTime;

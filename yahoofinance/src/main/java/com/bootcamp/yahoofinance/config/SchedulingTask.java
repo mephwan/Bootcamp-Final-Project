@@ -98,31 +98,6 @@ public class SchedulingTask {
 
     stockPriceRepository.saveAll(stockPriceEntities);
 
-    for (String stockCode : stockCodeList) {
-      LocalDate lastTradeDate = this.stockPriceRepository
-          .findFirstBySymbolOrderByMarketDateTimeDesc(stockCode)
-          .orElseThrow(() -> new BusinessException()).getMarketDateTime()
-          .toLocalDate();
-
-      StockDTO stockDTO =
-          StockDTO.builder().symbol(stockCode).timeFrame("M5")
-              .data(this.stockPriceRepository.findBySymbol(stockCode).stream()
-                  .filter(e -> e.getMarketDateTime().toLocalDate()
-                      .equals(lastTradeDate))
-                  .map(e -> StockData.builder().symbol(e.getSymbol())
-                      .regularMarketTime(e.getRegularMarketTime())
-                      .marketDateTime(e.getMarketDateTime())
-                      .regularMarketPrice(e.getRegularMarketPrice())
-                      .regularMarketChangePercent(
-                          e.getRegularMarketChangePercent())
-                      .build())
-                  .collect(Collectors.toList()))
-              .build();
-
-      String redisString = "5min" + stockCode;
-
-      this.redisManager.set(redisString, stockDTO, Duration.ofMinutes(5));
-    }
   }
 
   @Scheduled(cron = "10 0 8 * * *")
@@ -180,9 +155,7 @@ public class SchedulingTask {
                   .low(low.get(i)) //
                   .close(close.get(i)) //
                   .timestamp(timestemp.get(i)) //
-                  .date(LocalDateTime
-                      .ofInstant(Instant.ofEpochSecond(timestemp.get(i)), zone)
-                      .toLocalDate())
+                  .date(Instant.ofEpochSecond(timestemp.get(i)).atZone(zone).toLocalDate())
                   .build());
         }
       }

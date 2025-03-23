@@ -8,9 +8,9 @@ public interface YahooService {
 
   StockDTO getPrice(String stockCode) throws JsonProcessingException;
 
-  StockOHLCDTO getDayOHLC(String stockCode);
+  StockOHLCDTO getDayOHLC(String stockCode) throws JsonProcessingException;
 
-  StockOHLCDTO getWeekOHLC(String stockCode);
+  StockOHLCDTO getWeekOHLC(String stockCode) throws JsonProcessingException;
 
   StockOHLCDTO getMonthOHLC(String stockCode);
 }

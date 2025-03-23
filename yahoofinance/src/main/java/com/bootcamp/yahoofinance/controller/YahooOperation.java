@@ -12,10 +12,10 @@ public interface YahooOperation {
   StockDTO getPrice(@RequestParam String stockCode) throws JsonProcessingException;
 
   @GetMapping(value = "/stock/d1")
-  StockOHLCDTO getDayOHLC(@RequestParam String stockCode);
+  StockOHLCDTO getDayOHLC(@RequestParam String stockCode) throws JsonProcessingException;
 
   @GetMapping(value = "/stock/w1")
-  StockOHLCDTO getWeekOHLC(@RequestParam String stockCode);
+  StockOHLCDTO getWeekOHLC(@RequestParam String stockCode) throws JsonProcessingException;
 
   @GetMapping(value = "stock/mn")
   StockOHLCDTO getMonthOHLC(@RequestParam String stockCode);

@@ -7,6 +7,7 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import lombok.ToString;
 
 @Getter
 @Setter
@@ -24,6 +25,7 @@ public class StockOHLCDTO {
   @Builder
   @AllArgsConstructor
   @NoArgsConstructor
+  @ToString
   public static class StockData {
     private String symbol;
     private Long timestamp;
