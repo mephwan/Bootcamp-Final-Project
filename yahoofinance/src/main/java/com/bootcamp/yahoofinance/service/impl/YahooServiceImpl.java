@@ -116,38 +116,38 @@ public class YahooServiceImpl implements YahooService {
         public StockOHLCDTO getDayOHLC(String stockCode)
                         throws JsonProcessingException {
 
-                String redisString = "D1" + stockCode;
+                // String redisString = "D1" + stockCode;
 
-                StockOHLCDTO.StockData[] redisDataArr = this.redisManager.get(
-                                redisString, StockOHLCDTO.StockData[].class);
+                // StockOHLCDTO.StockData[] redisDataArr = this.redisManager.get(
+                //                 redisString, StockOHLCDTO.StockData[].class);
 
-                if (redisDataArr != null) {
+                // if (redisDataArr != null) {
 
-                        List<StockOHLCDTO.StockData> redisData =
-                                        Arrays.asList(redisDataArr);
+                //         List<StockOHLCDTO.StockData> redisData =
+                //                         Arrays.asList(redisDataArr);
 
-                        Long redisLastUpdateTimeStamp = redisData.stream()
-                                        .map(e -> e.getTimestamp())
-                                        .max(Comparator.naturalOrder()).get();
+                //         Long redisLastUpdateTimeStamp = redisData.stream()
+                //                         .map(e -> e.getTimestamp())
+                //                         .max(Comparator.naturalOrder()).get();
 
-                        if (this.stockPriceOHLCRepository
-                                        .findFirstBySymbolOrderByTimestampDesc(
-                                                        stockCode)
-                                        .get().getTimestamp()
-                                        .equals(redisLastUpdateTimeStamp)) {
+                //         if (this.stockPriceOHLCRepository
+                //                         .findFirstBySymbolOrderByTimestampDesc(
+                //                                         stockCode)
+                //                         .get().getTimestamp()
+                //                         .equals(redisLastUpdateTimeStamp)) {
 
-                                System.out.println(LocalDateTime.now().getHour()
-                                                + ":"
-                                                + LocalDateTime.now()
-                                                                .getMinute()
-                                                + "  Get From Redis: "
-                                                + redisString);
+                //                 System.out.println(LocalDateTime.now().getHour()
+                //                                 + ":"
+                //                                 + LocalDateTime.now()
+                //                                                 .getMinute()
+                //                                 + "  Get From Redis: "
+                //                                 + redisString);
 
-                                return StockOHLCDTO.builder().symbol(stockCode)
-                                                .timeFrame("D1").data(redisData)
-                                                .build();
-                        }
-                }
+                //                 return StockOHLCDTO.builder().symbol(stockCode)
+                //                                 .timeFrame("D1").data(redisData)
+                //                                 .build();
+                //         }
+                // }
 
 
                 LocalDate today = LocalDate.now();
@@ -175,14 +175,14 @@ public class YahooServiceImpl implements YahooService {
                                                 .build())
                                 .collect(Collectors.toList());
 
-                System.out.println(LocalDateTime.now().getHour() + ":"
-                                + LocalDateTime.now().getMinute()
-                                + "  Get From Database: " + redisString);
+                // System.out.println(LocalDateTime.now().getHour() + ":"
+                //                 + LocalDateTime.now().getMinute()
+                //                 + "  Get From Database: " + redisString);
 
-                this.redisManager.set(redisString,
-                                datas.stream().toArray(
-                                                StockOHLCDTO.StockData[]::new),
-                                Duration.ofHours(12));
+                // this.redisManager.set(redisString,
+                //                 datas.stream().toArray(
+                //                                 StockOHLCDTO.StockData[]::new),
+                //                 Duration.ofHours(12));
 
                 StockOHLCDTO.StockData lastUpdatePrice =
                                 getLastUpdateOHLC(stockCode);

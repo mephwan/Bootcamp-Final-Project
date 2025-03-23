@@ -339,12 +339,14 @@ document.addEventListener("DOMContentLoaded", function () {
     });
   });
 
-document.querySelectorAll('.chart-controls button').forEach(button => {
-  button.addEventListener('click', function() {
-    document.querySelector('.chart-controls .active')?.classList.remove('active');
-    this.classList.add('active');
+  document.querySelectorAll('.chart-controls > button:not(.ma-btn)').forEach(button => {
+    button.addEventListener('click', function() {
+      // 只清除时间周期按钮的active状态
+      document.querySelectorAll('.chart-controls > button:not(.ma-btn).active')
+        .forEach(btn => btn.classList.remove('active'));
+      this.classList.add('active');
+    });
   });
-});
 
 document.querySelectorAll('input[name="symbol"]').forEach(radio => {
   radio.addEventListener('change', function() {
@@ -368,8 +370,8 @@ document.querySelectorAll('.ma-btn').forEach(button => {
     currentMAPeriod = period;
     
     // 更新按钮状态
-    document.querySelectorAll('.ma-btn').forEach(btn => 
-      btn.classList.remove('active'));
+    document.querySelectorAll('.ma-btn.active')
+      .forEach(btn => btn.classList.remove('active'));
     this.classList.add('active');
     
     // 刷新图表
@@ -378,6 +380,12 @@ document.querySelectorAll('.ma-btn').forEach(button => {
 });
 
 document.querySelector('input[name="symbol"]:checked').dispatchEvent(new Event('change'));
+
+// 在发起请求前显示
+document.getElementById('loading').style.display = 'flex';
+
+// 在数据加载完成后隐藏
+document.getElementById('loading').style.display = 'none';
 
   // 默认加载K线图
   loadM5Chart();

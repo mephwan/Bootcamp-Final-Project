@@ -1,114 +1,161 @@
-/* styles.css */
 * {
   margin: 0;
   padding: 0;
   box-sizing: border-box;
-  font-family: 'Roboto', sans-serif;
+  font-family: 'Roboto', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
 }
 
 body {
-  background: #f0f2f5;
+  background: #0f172a;
+  color: #e2e8f0;
 }
 
 .container {
   display: flex;
-  gap: 25px;
-  padding: 25px;
+  gap: 1.5rem;
+  padding: 1.5rem;
   max-width: 1800px;
   margin: 0 auto;
 }
 
-/* 右側列表樣式 */
+/* 符号列表样式 - 玻璃拟态效果 */
 .symbol-list {
-  width: 350px;
-  background: #ffffff;
-  border-radius: 12px;
-  padding: 25px;
-  box-shadow: 0 2px 8px rgba(0,0,0,0.1);
-  height: calc(100vh - 40px);
+  width: 320px;
+  background: rgba(255, 255, 255, 0.05);
+  backdrop-filter: blur(12px);
+  border-radius: 16px;
+  padding: 1.5rem;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+  height: calc(100vh - 3rem);
   overflow-y: auto;
 }
 
 .symbol-list h1 {
-  font-size: 17px;
-  color: #2d3436;
-  margin: 18px 0 12px;
-  padding-bottom: 12px;
-  border-bottom: 2px solid #f0f2f5;
+  font-size: 1.1rem;
+  font-weight: 600;
+  color: #7dd3fc;
+  margin: 1.2rem 0 0.8rem;
+  padding-bottom: 0.8rem;
+  border-bottom: 1px solid rgba(125, 211, 252, 0.2);
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.symbol-list h1::before {
+  content: "📈";
+  font-size: 1.2em;
 }
 
 .symbol-option {
-  display: block;
-  padding: 14px 18px;
-  margin: 7px 0;
+  display: flex;
+  align-items: center;
+  padding: 0.8rem 1rem;
+  margin: 0.4rem 0;
   border-radius: 8px;
   cursor: pointer;
-  transition: all 0.2s;
-  background: #f8f9fa;
-  border: 1px solid #e9ecef;
-  font-size: 15px;
+  transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+  background: rgba(255, 255, 255, 0.03);
+  border: 1px solid transparent;
+  font-size: 0.95rem;
+  color: #e2e8f0;
+  position: relative;
+  overflow: hidden;
 }
 
 .symbol-option:hover {
-  background: #e9ecef;
-  transform: translateX(3px);
+  background: rgba(125, 211, 252, 0.1);
+  border-color: rgba(125, 211, 252, 0.3);
+  transform: translateX(4px);
 }
 
 .symbol-option input[type="radio"] {
-  margin-right: 10px;
-  accent-color: #4a90e2;
+  margin-right: 0.8rem;
+  width: 1.1em;
+  height: 1.1em;
+  accent-color: #7dd3fc;
+  cursor: pointer;
 }
 
-/* 圖表區域樣式 */
+/* 图表容器 */
 .chart-wrapper {
+  position: relative;
   flex: 1;
-  background: #ffffff;
-  border-radius: 12px;
-  padding: 20px;
-  box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+  background: rgba(15, 23, 42, 0.8);
+  border-radius: 16px;
+  padding: 1.5rem;
+  backdrop-filter: blur(12px);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
 }
 
-.chart-wrapper h1 {
-  color: #2d3436;
-  margin-bottom: 20px;
-  font-size: 24px;
-}
-
-.chart-controls {
-  margin-bottom: 20px;
+#chart-title {
+  font-size: 1.5rem;
+  font-weight: 600;
+  color: #7dd3fc;
+  margin-bottom: 1.5rem;
   display: flex;
-  gap: 10px;
+  align-items: center;
+  gap: 0.8rem;
+}
+
+/* 图表控制按钮 */
+.chart-controls {
+  margin-bottom: 1.5rem;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.8rem;
 }
 
 .chart-controls button {
-  padding: 8px 20px;
+  padding: 0.6rem 1.2rem;
   border: none;
-  border-radius: 6px;
-  background: #f8f9fa;
-  color: #495057;
+  border-radius: 8px;
+  background: rgba(125, 211, 252, 0.1);
+  color: #7dd3fc;
   cursor: pointer;
-  transition: all 0.2s;
-  border: 1px solid #e9ecef;
+  transition: all 0.25s ease;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-weight: 500;
+  border: 1px solid rgba(125, 211, 252, 0.2);
 }
 
 .chart-controls button:hover {
-  background: #4a90e2;
-  color: white;
+  background: rgba(125, 211, 252, 0.2);
+  box-shadow: 0 2px 8px rgba(125, 211, 252, 0.1);
 }
 
 .chart-controls button.active {
-  background: #4a90e2;
-  color: white;
+  background: #7dd3fc;
+  color: #0f172a;
+  box-shadow: 0 2px 12px rgba(125, 211, 252, 0.3);
 }
 
+.ma-controls {
+  display: flex;
+  gap: 0.6rem;
+  margin-left: auto;
+}
+
+/* 移动平均线按钮 */
+.ma-controls button {
+  padding: 0.5rem 1rem;
+  min-width: 70px;
+}
+
+/* 图表容器 */
 #chart-container {
   height: 700px;
-  border-radius: 8px;
+  border-radius: 12px;
   overflow: hidden;
-  border: 1px solid #e9ecef;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  background: rgba(0, 0, 0, 0.3);
 }
 
-/* 響應式設計 */
+/* 响应式设计 */
 @media (max-width: 1200px) {
   .container {
     flex-direction: column;
@@ -116,8 +163,8 @@ body {
   
   .symbol-list {
     width: 100%;
-    padding: 20px;
     height: auto;
+    max-height: 400px;
   }
   
   #chart-container {
@@ -125,37 +172,121 @@ body {
   }
 }
 
-.chart-controls {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 10px;
-  margin-bottom: 20px;
+/* 加载动画 */
+@keyframes pulse {
+  50% { opacity: 0.5; }
 }
 
-.ma-controls {
-  display: flex;
-  gap: 5px;
-  margin-left: auto;
+.loading {
+  animation: pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
 }
 
-.chart-controls button,
-.ma-controls button {
-  padding: 8px 15px;
-  border: 1px solid #444;
-  background: #1a1a1a;
-  color: #fff;
-  cursor: pointer;
+#loading {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  z-index: 100;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 1rem;
+  background: rgba(15, 23, 42, 0.9);
+  padding: 2rem;
+  border-radius: 16px;
+  border: 1px solid rgba(125, 211, 252, 0.3);
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+  backdrop-filter: blur(8px);
+}
+
+.loading-spinner {
+  width: 3rem;
+  height: 3rem;
+  border: 3px solid rgba(125, 211, 252, 0.3);
+  border-radius: 50%;
+  border-top-color: #7dd3fc;
+  animation: spin 1s linear infinite;
+}
+
+.loading-text {
+  color: #7dd3fc;
+  font-size: 1.1rem;
+  letter-spacing: 0.5px;
+}
+
+@keyframes spin {
+  to { transform: rotate(360deg); }
+}
+
+.symbol-list::-webkit-scrollbar {
+  width: 8px; /* 滚动条宽度 */
+}
+
+.symbol-list::-webkit-scrollbar-track {
+  background: rgba(15, 23, 42, 0.3); /* 轨道颜色 */
   border-radius: 4px;
-  transition: all 0.3s;
+  margin: 10px 0;
 }
 
-.chart-controls button.active,
-.ma-controls button.active {
-  background: #26a69a;
-  border-color: #26a69a;
+.symbol-list::-webkit-scrollbar-thumb {
+  background: rgba(125, 211, 252, 0.4); /* 滑块颜色 */
+  border-radius: 4px;
+  border: 1px solid rgba(125, 211, 252, 0.1);
 }
 
-.chart-controls button:hover,
-.ma-controls button:hover {
-  background: #2c2c2c;
+.symbol-list::-webkit-scrollbar-thumb:hover {
+  background: rgba(125, 211, 252, 0.6); /* 悬停状态 */
+}
+
+/* Firefox兼容 */
+.symbol-list {
+  scrollbar-color: rgba(125, 211, 252, 0.4) rgba(15, 23, 42, 0.3);
+  scrollbar-width: thin;
+}
+
+.symbol-list {
+  /* 原有样式 */
+  width: 320px;
+  background: rgba(255, 255, 255, 0.05);
+  backdrop-filter: blur(12px);
+  border-radius: 16px;
+  padding: 1.5rem;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+  height: calc(100vh - 3rem);
+  overflow-y: auto;
+
+  /* 新增滚动条样式 */
+  scrollbar-color: rgba(125, 211, 252, 0.4) rgba(15, 23, 42, 0.3);
+  scrollbar-width: thin;
+}
+
+.symbol-list::-webkit-scrollbar {
+  width: 8px;
+}
+
+.symbol-list::-webkit-scrollbar-track {
+  background: rgba(15, 23, 42, 0.3);
+  border-radius: 4px;
+  margin: 10px 0;
+}
+
+.symbol-list::-webkit-scrollbar-thumb {
+  background: rgba(125, 211, 252, 0.4);
+  border-radius: 4px;
+  border: 1px solid rgba(125, 211, 252, 0.1);
+  transition: background 0.3s ease;
+}
+
+.symbol-list::-webkit-scrollbar-thumb:hover {
+  background: rgba(125, 211, 252, 0.6);
+}
+
+.chart-controls > button.active {
+  background: #2196F3;
+}
+
+/* MA按钮样式 */
+.ma-controls .ma-btn.active {
+  background: #FF9800;
 }
