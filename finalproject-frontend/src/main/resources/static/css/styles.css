@@ -12,8 +12,8 @@ body {
 
 .container {
   display: flex;
-  gap: 1.5rem;
-  padding: 1.5rem;
+  gap: 20px;
+  padding: 20px;
   max-width: 1800px;
   margin: 0 auto;
 }
@@ -88,6 +88,7 @@ body {
   backdrop-filter: blur(12px);
   border: 1px solid rgba(255, 255, 255, 0.1);
   box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+  min-width: 0;
 }
 
 #chart-title {
@@ -103,9 +104,11 @@ body {
 /* 图表控制按钮 */
 .chart-controls {
   margin-bottom: 1.5rem;
+  justify-content: space-between;
   display: flex;
   flex-wrap: wrap;
-  gap: 0.8rem;
+  gap: 10px;
+  margin-bottom: 20px;
 }
 
 .chart-controls button {
@@ -136,7 +139,7 @@ body {
 
 .ma-controls {
   display: flex;
-  gap: 0.6rem;
+  gap: 10px;
   margin-left: auto;
 }
 
