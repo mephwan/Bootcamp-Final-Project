@@ -108,7 +108,7 @@ public class YahooServiceImpl implements YahooService {
                 System.out.println("Get From Database: " + redisString);
 
                 this.redisManager.set(redisString, result,
-                                Duration.ofSeconds(10));
+                                Duration.ofMinutes(5));
 
                 return result;
         }
@@ -199,7 +199,7 @@ public class YahooServiceImpl implements YahooService {
 
                         this.redisManager.set(redisString, datas.stream()
                                         .toArray(StockOHLCDTO.StockData[]::new),
-                                        Duration.ofSeconds(10));
+                                        Duration.ofHours(12));
                 }
 
                 StockOHLCDTO.StockData lastUpdatePrice =
@@ -335,7 +335,7 @@ public class YahooServiceImpl implements YahooService {
 
                         this.redisManager.set(redisString, datas.stream()
                                         .toArray(StockOHLCDTO.StockData[]::new),
-                                        Duration.ofSeconds(10));
+                                        Duration.ofHours(12));
 
                 }
 
@@ -494,7 +494,7 @@ public class YahooServiceImpl implements YahooService {
 
                         this.redisManager.set(redisString, datas.stream()
                                         .toArray(StockOHLCDTO.StockData[]::new),
-                                        Duration.ofSeconds(10));
+                                        Duration.ofHours(12));
                 }
 
                 StockOHLCDTO.StockData lastUpdatePrice =
