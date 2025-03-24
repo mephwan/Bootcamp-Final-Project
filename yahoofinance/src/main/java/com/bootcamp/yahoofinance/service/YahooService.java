@@ -12,5 +12,5 @@ public interface YahooService {
 
   StockOHLCDTO getWeekOHLC(String stockCode) throws JsonProcessingException;
 
-  StockOHLCDTO getMonthOHLC(String stockCode);
+  StockOHLCDTO getMonthOHLC(String stockCode) throws JsonProcessingException;
 }

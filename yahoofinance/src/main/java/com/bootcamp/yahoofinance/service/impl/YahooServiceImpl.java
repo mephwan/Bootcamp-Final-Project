@@ -219,11 +219,11 @@ public class YahooServiceImpl implements YahooService {
                                         .stream() //
                                         .filter(e -> e.getMarketDate()
                                                         .equals(date)) //
-                                                        .max(Comparator.comparing(StockOHLCDTO.StockData::getTimestamp));
-                                        
+                                        .max(Comparator.comparing(
+                                                        StockOHLCDTO.StockData::getTimestamp));
+
 
                         if (oneDayOHLC.isPresent()) {
-
 
                                 dailyOHLC.add(StockOHLCDTO.StockData.builder() //
                                                 .symbol(stockCode) //
@@ -254,29 +254,28 @@ public class YahooServiceImpl implements YahooService {
 
                 LocalDate today = LocalDate.now();
 
-
                 String redisString = "D1" + stockCode;
 
                 StockOHLCDTO.StockData[] redisDataArr = this.redisManager.get(
                                 redisString, StockOHLCDTO.StockData[].class);
 
+                List<StockOHLCDTO.StockData> datas = new LinkedList<>();
 
                 boolean isGetFromRedis = false;
-                List<StockOHLCDTO.StockData> redisData = new LinkedList<>();
 
                 if (redisDataArr != null) {
-                        redisData = new ArrayList<>(
-                                        Arrays.asList(redisDataArr));
 
-                        Long redisLastUpdateTimeStamp = redisData.stream()
-                                        .map(e -> e.getTimestamp())
+                        datas = new ArrayList<>(Arrays.asList(redisDataArr));
+
+                        LocalDate redisLastUpdate = datas.stream()
+                                        .map(e -> e.getMarketDate())
                                         .max(Comparator.naturalOrder()).get();
 
                         if (this.stockPriceOHLCRepository
                                         .findFirstBySymbolOrderByTimestampDesc(
                                                         stockCode)
-                                        .get().getTimestamp()
-                                        .equals(redisLastUpdateTimeStamp)) {
+                                        .get().getDate()
+                                        .equals(redisLastUpdate)) {
 
                                 System.out.println(LocalDateTime.now().getHour()
                                                 + ":"
@@ -290,10 +289,16 @@ public class YahooServiceImpl implements YahooService {
 
                 }
 
-                List<StockOHLCDTO.StockData> datas = new LinkedList<>();
-
                 if (isGetFromRedis) {
-                        datas = redisData;
+                        StockOHLCDTO.builder().symbol(stockCode).timeFrame("D1")
+                                        .data(datas.stream().collect(Collectors
+                                                        .toMap(StockOHLCDTO.StockData::getMarketDate,
+                                                                        Function.identity(),
+                                                                        (existing, replacement) -> existing))
+                                                        .values().stream()
+                                                        .collect(Collectors
+                                                                        .toList()))
+                                        .build();
                 } else {
 
 
@@ -323,6 +328,14 @@ public class YahooServiceImpl implements YahooService {
                                                         .build())
                                         .collect(Collectors.toList());
 
+                        System.out.println(LocalDateTime.now().getHour() + ":"
+                                        + LocalDateTime.now().getMinute()
+                                        + "  Get From Database: "
+                                        + redisString);
+
+                        this.redisManager.set(redisString, datas.stream()
+                                        .toArray(StockOHLCDTO.StockData[]::new),
+                                        Duration.ofSeconds(10));
 
                 }
 
@@ -337,16 +350,12 @@ public class YahooServiceImpl implements YahooService {
 
                 for (int i = 0; i < 52; i++) {
 
-                        LocalDate weekDate = today.plusWeeks(-1 * i);
+                        LocalDate weekDate = today.minusWeeks(i);
 
 
-                        if (weekDate.getDayOfWeek().equals(DayOfWeek.SUNDAY)
-                                        || weekDate.getDayOfWeek().equals(
-                                                        DayOfWeek.MONDAY)) {
+                        if (weekDate.getDayOfWeek().equals(DayOfWeek.SUNDAY)) {
                                 weekDate = weekDate.plusWeeks(-1);
                         }
-
-
 
                         LocalDate finalWeekDate = weekDate;
 
@@ -384,41 +393,98 @@ public class YahooServiceImpl implements YahooService {
 
                 }
 
-                this.redisManager.set(redisString,
-                                datas.stream().toArray(
-                                                StockOHLCDTO.StockData[]::new),
-                                Duration.ofHours(12));
-
                 return StockOHLCDTO.builder().symbol(stockCode).timeFrame("W1")
                                 .data(weeklyOHLC).build();
         }
 
         @Override
-        public StockOHLCDTO getMonthOHLC(String stockCode) {
+        public StockOHLCDTO getMonthOHLC(String stockCode)
+                        throws JsonProcessingException {
 
                 LocalDate today = LocalDate.now();
-                Long getFromTimeStamp = today.plusYears(-2).withDayOfMonth(1)
-                                .atStartOfDay(ZoneId.systemDefault())
-                                .toInstant().getEpochSecond();
 
-                List<StockPriceOHLCEntity> dailyPrices =
-                                this.stockPriceOHLCRepository
-                                                .findBySymbol(stockCode)
-                                                .stream()
-                                                .filter(e -> e.getTimestamp() >= getFromTimeStamp)
-                                                .collect(Collectors.toList());
+                String redisString = "MN" + stockCode;
 
-                List<StockOHLCDTO.StockData> datas = dailyPrices.stream()
-                                .map(e -> StockOHLCDTO.StockData.builder()
-                                                .symbol(stockCode)
-                                                .timestamp(e.getTimestamp()) //
-                                                .marketDate(e.getDate()) //
-                                                .open(e.getOpen()) //
-                                                .high(e.getHigh()) //
-                                                .low(e.getLow()) //
-                                                .close(e.getClose()) //
-                                                .build())
-                                .collect(Collectors.toList());
+                StockOHLCDTO.StockData[] redisDataArr = this.redisManager.get(
+                                redisString, StockOHLCDTO.StockData[].class);
+
+                List<StockOHLCDTO.StockData> datas = new LinkedList<>();
+
+                boolean isGetFromRedis = false;
+
+                if (redisDataArr != null) {
+
+                        datas = new ArrayList<>(Arrays.asList(redisDataArr));
+
+                        LocalDate redisLastUpdate = datas.stream()
+                                        .map(e -> e.getMarketDate())
+                                        .max(Comparator.naturalOrder()).get();
+
+                        if (this.stockPriceOHLCRepository
+                                        .findFirstBySymbolOrderByTimestampDesc(
+                                                        stockCode)
+                                        .get().getDate()
+                                        .equals(redisLastUpdate)) {
+
+                                System.out.println(LocalDateTime.now().getHour()
+                                                + ":"
+                                                + LocalDateTime.now()
+                                                                .getMinute()
+                                                + "  Get From Redis: "
+                                                + redisString);
+
+                                isGetFromRedis = true;
+                        }
+
+                }
+
+                if (isGetFromRedis) {
+                        StockOHLCDTO.builder().symbol(stockCode).timeFrame("D1")
+                                        .data(datas.stream().collect(Collectors
+                                                        .toMap(StockOHLCDTO.StockData::getMarketDate,
+                                                                        Function.identity(),
+                                                                        (existing, replacement) -> existing))
+                                                        .values().stream()
+                                                        .collect(Collectors
+                                                                        .toList()))
+                                        .build();
+                } else {
+
+                        Long getFromTimeStamp = today.plusYears(-2)
+                                        .withDayOfMonth(1)
+                                        .atStartOfDay(ZoneId.systemDefault())
+                                        .toInstant().getEpochSecond();
+
+                        List<StockPriceOHLCEntity> dailyPrices =
+                                        this.stockPriceOHLCRepository
+                                                        .findBySymbol(stockCode)
+                                                        .stream()
+                                                        .filter(e -> e.getTimestamp() >= getFromTimeStamp)
+                                                        .collect(Collectors
+                                                                        .toList());
+
+                        datas = dailyPrices.stream()
+                                        .map(e -> StockOHLCDTO.StockData
+                                                        .builder()
+                                                        .symbol(stockCode)
+                                                        .timestamp(e.getTimestamp()) //
+                                                        .marketDate(e.getDate()) //
+                                                        .open(e.getOpen()) //
+                                                        .high(e.getHigh()) //
+                                                        .low(e.getLow()) //
+                                                        .close(e.getClose()) //
+                                                        .build())
+                                        .collect(Collectors.toList());
+
+                        System.out.println(LocalDateTime.now().getHour() + ":"
+                                        + LocalDateTime.now().getMinute()
+                                        + "  Get From Database: "
+                                        + redisString);
+
+                        this.redisManager.set(redisString, datas.stream()
+                                        .toArray(StockOHLCDTO.StockData[]::new),
+                                        Duration.ofSeconds(10));
+                }
 
                 StockOHLCDTO.StockData lastUpdatePrice =
                                 getLastUpdateOHLC(stockCode);
@@ -511,7 +577,8 @@ public class YahooServiceImpl implements YahooService {
 
 
                 return StockOHLCDTO.StockData.builder().symbol(stockCode) //
-                                .timestamp(lastDate.atStartOfDay(zone).plusDays(1)
+                                .timestamp(lastDate.atStartOfDay(zone)
+                                                .plusDays(1).minusMinutes(30)
                                                 .toEpochSecond()) //
                                 .marketDate(lastDate) //
                                 .open(open) //

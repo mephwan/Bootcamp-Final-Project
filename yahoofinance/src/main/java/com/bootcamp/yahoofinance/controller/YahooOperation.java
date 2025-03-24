@@ -18,5 +18,5 @@ public interface YahooOperation {
   StockOHLCDTO getWeekOHLC(@RequestParam String stockCode) throws JsonProcessingException;
 
   @GetMapping(value = "stock/mn")
-  StockOHLCDTO getMonthOHLC(@RequestParam String stockCode);
+  StockOHLCDTO getMonthOHLC(@RequestParam String stockCode) throws JsonProcessingException;
 }

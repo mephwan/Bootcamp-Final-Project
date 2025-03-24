@@ -29,7 +29,7 @@ public class YahooController implements YahooOperation {
   }
 
   @Override
-  public StockOHLCDTO getMonthOHLC(String stockCode) {
+  public StockOHLCDTO getMonthOHLC(String stockCode) throws JsonProcessingException {
     return this.yahooService.getMonthOHLC(stockCode);
   }
 }
