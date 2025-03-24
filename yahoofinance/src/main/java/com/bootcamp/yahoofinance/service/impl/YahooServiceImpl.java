@@ -352,9 +352,20 @@ public class YahooServiceImpl implements YahooService {
 
                         LocalDate weekDate = today.minusWeeks(i);
 
-
-                        if (weekDate.getDayOfWeek().equals(DayOfWeek.SUNDAY)) {
-                                weekDate = weekDate.plusWeeks(-1);
+                        if (stockCode.contains("HK")
+                                        || stockCode.equals("BTC-USD")
+                                        || stockCode.equals("ETH-USD")) {
+                                if (weekDate.getDayOfWeek()
+                                                .equals(DayOfWeek.SUNDAY)) {
+                                        weekDate = weekDate.plusWeeks(-1);
+                                }
+                        } else {
+                                if (weekDate.getDayOfWeek()
+                                                .equals(DayOfWeek.SUNDAY)
+                                                || weekDate.getDayOfWeek()
+                                                                .equals(DayOfWeek.MONDAY)) {
+                                        weekDate = weekDate.plusWeeks(-1);
+                                }
                         }
 
                         LocalDate finalWeekDate = weekDate;
