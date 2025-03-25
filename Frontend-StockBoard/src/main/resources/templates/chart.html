@@ -1,0 +1,117 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>TradingView Chart</title>
+  <script src="https://unpkg.com/lightweight-charts@4.2.3/dist/lightweight-charts.standalone.production.js"></script>
+  <link rel="stylesheet" th:href="@{/css/styles.css}">
+  <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+</head>
+
+<body>
+  <div class="container">
+    <!-- 右側固定列表 -->
+    <div class="symbol-list">
+      <h1>HK Top 10 Market Cap</h1>
+      <label class="symbol-option">
+        <input type="radio" name="symbol" value="0700.HK" checked> 0700.HK Tencent
+      </label>
+      <label class="symbol-option">
+        <input type="radio" name="symbol" value="9988.HK"> 9988.HK BABA-W
+      </label>
+      <label class="symbol-option">
+        <input type="radio" name="symbol" value="0941.HK"> 0941.HK CHINA MOBILE
+      </label>
+      <label class="symbol-option">
+        <input type="radio" name="symbol" value="0939.HK"> 0939.HK CCB
+      </label>
+      <label class="symbol-option">
+        <input type="radio" name="symbol" value="0005.HK"> 0005.HK HSBC HOLDINGS
+      </label>
+      <label class="symbol-option">
+        <input type="radio" name="symbol" value="1810.HK"> 1810.HK XIAOMI-W
+      </label>
+      <label class="symbol-option">
+        <input type="radio" name="symbol" value="3690.HK"> 3690.HK MEITUAN-W
+      </label>
+      <label class="symbol-option">
+        <input type="radio" name="symbol" value="0883.HK"> 0883.HK CNOOC
+      </label>
+      <label class="symbol-option">
+        <input type="radio" name="symbol" value="1299.HK"> 1299.HK AIA
+      </label>
+      <label class="symbol-option">
+        <input type="radio" name="symbol" value="9618.HK"> 9618.HK JD-SW
+      </label>
+
+      <h1>US S&P 500 Top 10 Market Cap</h1>
+      <label class="symbol-option">
+        <input type="radio" name="symbol" value="AAPL"> AAPL Apple Inc.
+      </label>
+      <label class="symbol-option">
+        <input type="radio" name="symbol" value="MSFT"> MSFT Microsoft Corporation
+      </label>
+      <label class="symbol-option">
+        <input type="radio" name="symbol" value="NVDA"> NVDA NVIDIA Corporation
+      </label>
+      <label class="symbol-option">
+        <input type="radio" name="symbol" value="AMZN"> AMZN Amazon.com, Inc.
+      </label>
+      <label class="symbol-option">
+        <input type="radio" name="symbol" value="WMT"> WMT Walmart Inc.
+      </label>
+      <label class="symbol-option">
+        <input type="radio" name="symbol" value="JPM"> JPM JP Morgan Chase & Co.
+      </label>
+      <label class="symbol-option">
+        <input type="radio" name="symbol" value="V"> V Visa Inc.
+      </label>
+      <label class="symbol-option">
+        <input type="radio" name="symbol" value="UNH"> UNH UnitedHealth Group Inc.
+      </label>
+      <label class="symbol-option">
+        <input type="radio" name="symbol" value="JNJ"> JNJ Johnson & Johnson
+      </label>
+      <label class="symbol-option">
+        <input type="radio" name="symbol" value="PG"> PG Procter & Gamble Company
+      </label>
+
+      <h1>Cryptocurrency</h1>
+      <label class="symbol-option">
+        <input type="radio" name="symbol" value="BTC-USD"> BTCUSD Bitcoin
+      </label>
+      <label class="symbol-option">
+        <input type="radio" name="symbol" value="ETH-USD"> ETHUSD Ethereum
+      </label>
+    </div>
+  
+    <div class="chart-wrapper">
+      <h1 id="chart-title">Stock Chart</h1>
+      <div class="chart-controls">
+        <button id="M5">M5</button>
+        <button id="D1">D1</button>
+        <button id="W1">W1</button>
+        <button id="MN">MN</button>
+        <div class="ma-controls">
+          <button class="ma-btn active" data-period="0">No MA</button>
+          <button class="ma-btn" data-period="20">20 MA</button>
+          <button class="ma-btn" data-period="50">50 MA</button>
+          <button class="ma-btn" data-period="100">100 MA</button>
+          <button class="ma-btn" data-period="150">150 MA</button>
+        </div>
+      </div>
+      <div id="loading" class="loading" style="display: none;">
+        <div class="loading-spinner"></div>
+        <div class="loading-text">Loading Data...</div>
+      </div>
+      <div id="chart-container"></div>
+    </div>
+
+
+  <script th:src="@{/js/chart.js}"></script>
+</body>
+
+</html>
