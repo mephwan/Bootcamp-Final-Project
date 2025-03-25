@@ -2,16 +2,16 @@
 
 ## Stock Chart Example
 M5 chart
-https://github.com/mephwan/Bootcamp-Final-Project/tree/main/Frontend-StockBoard/src/pic/m5.jpg
+<img src="./Frontend-StockBoard/src/pic/m5.jpg" width="100%" height="100%">
 
 D1 chart
-https://github.com/mephwan/Bootcamp-Final-Project/tree/main/Frontend-StockBoard/src/pic/d1.jpg
+<img src="./Frontend-StockBoard/src/pic/d1.jpg" width="100%" height="100%">
 
 W1 chart
-https://github.com/mephwan/Bootcamp-Final-Project/tree/main/Frontend-StockBoard/src/pic/w1.jpg
+<img src="./Frontend-StockBoard/src/pic/w1.jpg" width="100%" height="100%">
 
 MN chart
-https://github.com/mephwan/Bootcamp-Final-Project/tree/main/Frontend-StockBoard/src/pic/mn.jpg
+<img src="./Frontend-StockBoard/src/pic/mn.jpg" width="100%" height="100%">
 
 
 A full-stack application for visualizing stock market data with real-time updates and multiple chart types.
@@ -44,6 +44,7 @@ A full-stack application for visualizing stock market data with real-time update
 
 ## Project Structure
 Backend (Spring Boot)
+```
 src/
 ??? main/
 ?   ??? java/
@@ -63,3 +64,4 @@ frontend/
 ??? chart.js            # Chart logic
 ??? styles.css          # UI styling
 ??? lightweight-charts  # Charting library
+```
