@@ -46,22 +46,22 @@ A full-stack application for visualizing stock market data with real-time update
 Backend (Spring Boot)
 ```
 src/
-??? main/
-?   ??? java/
-?   ?   ??? com/stockapp/
-?   ?       ??? controller/     # API controllers
-?   ?       ??? service/        # Business logic
-?   ?       ??? repository/     # Database operations
-?   ?       ??? model/          # Data entities
-?   ?       ??? config/         # Spring configurations
-?   ??? resources/
-?       ??? application.properties
+├── main/
+│   ├── java/
+│   │   └── com/stockapp/
+│   │       ├── controller/     # API controllers
+│   │       ├── service/        # Business logic
+│   │       ├── repository/     # Database operations
+│   │       ├── model/          # Data entities
+│   │       └── config/         # Spring configurations
+│   └── resources/
+│       └── application.properties
 
 
 Frontend
 frontend/
-??? index.html          # Main interface
-??? chart.js            # Chart logic
-??? styles.css          # UI styling
-??? lightweight-charts  # Charting library
+├── index.html          # Main interface
+├── chart.js            # Chart logic
+├── styles.css          # UI styling
+└── lightweight-charts  # Charting library
 ```
